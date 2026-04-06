@@ -366,10 +366,66 @@ tbody tr:hover { background: #fafcfd; }
   .chart-row { grid-template-columns: 1fr; }
   .floorplan-container { grid-template-columns: 1fr; }
 }
+
+/* ── Auth Gate ── */
+#auth-gate {
+  position: fixed; inset: 0; z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--deep-slate), var(--steel-teal));
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+#auth-gate.hidden { display: none; }
+.auth-box {
+  background: white; border-radius: 14px; padding: 40px 36px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25); text-align: center;
+  max-width: 400px; width: 90%;
+}
+.auth-box h2 { font-size: 1.3rem; color: var(--deep-slate); margin-bottom: 6px; }
+.auth-box .auth-subtitle { font-size: 0.82rem; color: var(--silver); margin-bottom: 24px; }
+.auth-box input[type="password"] {
+  width: 100%; padding: 12px 16px; border: 2px solid var(--cloud);
+  border-radius: 8px; font-size: 1rem; outline: none;
+  transition: border-color 0.2s;
+}
+.auth-box input[type="password"]:focus { border-color: var(--steel-teal); }
+.auth-box input[type="password"].shake {
+  animation: shake 0.4s ease; border-color: var(--coral);
+}
+.auth-btn {
+  margin-top: 16px; width: 100%; padding: 12px;
+  background: var(--coral); color: white; border: none;
+  border-radius: 8px; font-size: 1rem; font-weight: 600;
+  cursor: pointer; transition: background 0.2s;
+}
+.auth-btn:hover { background: #e55a4f; }
+.auth-error { color: var(--coral); font-size: 0.82rem; margin-top: 10px; min-height: 1.2em; }
+.auth-lock-icon { font-size: 2.4rem; margin-bottom: 12px; }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%,60% { transform: translateX(-8px); }
+  40%,80% { transform: translateX(8px); }
+}
+#dashboard-content { display: none; }
+#dashboard-content.visible { display: block; }
 </style>
 </head>
 <body>
 
+<!-- Auth Gate -->
+<div id="auth-gate">
+  <div class="auth-box">
+    <div class="auth-lock-icon">🔒</div>
+    <h2>Trial Prep Dashboard</h2>
+    <p class="auth-subtitle">1674 Jefferson Ave — Authorized Access Only</p>
+    <form id="auth-form" onsubmit="return false;">
+      <input type="password" id="auth-password" placeholder="Enter password" autocomplete="off" autofocus />
+      <button type="submit" class="auth-btn">Sign In</button>
+      <div class="auth-error" id="auth-error"></div>
+    </form>
+  </div>
+</div>
+
+<div id="dashboard-content">
 <div class="header">
   <div>
     <h1>1674 Jefferson Ave - Hurricane Ida LIGA Trial Prep Dashboard</h1>
@@ -3851,6 +3907,53 @@ var windObserver = new MutationObserver(function() {
   }
 });
 windObserver.observe(document.getElementById('tab-windforces'), { attributes: true, attributeFilter: ['class'] });
+</script>
+</div><!-- /dashboard-content -->
+
+<script>
+// ── Auth Gate ──
+(function() {
+  var HASH = '4cb1ef2938a2110930875072052d6a787a2e1132b6c802d31039093360f933ae';
+  var SESSION_KEY = 'ida_dash_auth';
+  var gate = document.getElementById('auth-gate');
+  var dashboard = document.getElementById('dashboard-content');
+  var form = document.getElementById('auth-form');
+  var input = document.getElementById('auth-password');
+  var errorEl = document.getElementById('auth-error');
+
+  function unlock() {
+    gate.classList.add('hidden');
+    dashboard.classList.add('visible');
+    sessionStorage.setItem(SESSION_KEY, 'true');
+  }
+
+  // Check session
+  if (sessionStorage.getItem(SESSION_KEY) === 'true') {
+    unlock();
+  }
+
+  async function sha256(message) {
+    var msgBuffer = new TextEncoder().encode(message);
+    var hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    var hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+  }
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var pw = input.value;
+    if (!pw) return;
+    var hash = await sha256(pw);
+    if (hash === HASH) {
+      unlock();
+    } else {
+      errorEl.textContent = 'Incorrect password. Please try again.';
+      input.classList.add('shake');
+      input.value = '';
+      setTimeout(function() { input.classList.remove('shake'); }, 500);
+    }
+  });
+})();
 </script>
 </body>
 </html>
