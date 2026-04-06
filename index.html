@@ -1142,9 +1142,13 @@ var budgetItems = [
   { name: 'Mgmt Fee, Profit & Overhead (20%)', budget: 96118.28, cat: 'shared', idaPct: 0, detail: 'Flat 20% fee on total contract value for project management, profit, insurance and overhead. Billed proportionally across all invoices' }
 ];
 
-// Set all default idaPct to 0 (no presets), then load user-saved values
+// Set defaults based on category, then load user-saved overrides
 (function() {
-  budgetItems.forEach(function(item) { item.idaPct = 0; });
+  budgetItems.forEach(function(item) {
+    if (item.cat === 'ida') item.idaPct = 100;
+    else if (item.cat === 'reno') item.idaPct = 0;
+    else item.idaPct = 50; // shared items default to 50/50
+  });
   var saved = JSON.parse(localStorage.getItem('ida_budget_pcts') || '{}');
   var locks = JSON.parse(localStorage.getItem('ida_budget_locks') || '{}');
   budgetItems.forEach(function(item) {
