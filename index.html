@@ -1,0 +1,3856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1674 Jefferson Ave - Hurricane Ida LIGA Trial Prep Dashboard</title>
+<style>
+:root {
+  --steel-teal: #3d5a6c;
+  --deep-slate: #2d4450;
+  --coral: #ff6f61;
+  --sky-blue: #7ba5bd;
+  --silver: #9ca8b0;
+  --cloud: #e8f0f5;
+  --charcoal: #1a2930;
+  --light: #f5f5f5;
+  --ida-color: #ff6f61;
+  --reno-color: #7ba5bd;
+  --shared-color: #9ca8b0;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--light);
+  color: var(--charcoal);
+}
+
+.header {
+  background: linear-gradient(135deg, var(--deep-slate), var(--steel-teal));
+  color: white;
+  padding: 20px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header h1 { font-size: 1.4rem; font-weight: 600; }
+.header .subtitle { font-size: 0.85rem; opacity: 0.8; margin-top: 4px; }
+.header .case-info { text-align: right; font-size: 0.8rem; opacity: 0.8; }
+
+.nav-tabs {
+  display: flex;
+  background: var(--deep-slate);
+  padding: 0 20px;
+  gap: 2px;
+}
+
+.nav-tab {
+  padding: 12px 24px;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.nav-tab:hover { color: white; background: rgba(255,255,255,0.05); }
+.nav-tab.active { color: white; border-bottom-color: var(--coral); background: rgba(255,255,255,0.08); }
+
+.tab-content { display: none; padding: 20px; }
+.tab-content.active { display: block; }
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border-left: 4px solid var(--steel-teal);
+}
+
+.summary-card.ida { border-left-color: var(--ida-color); }
+.summary-card.reno { border-left-color: var(--reno-color); }
+.summary-card.total { border-left-color: var(--charcoal); }
+
+.summary-card .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--silver); margin-bottom: 6px; }
+.summary-card .value { font-size: 1.6rem; font-weight: 700; }
+.summary-card .detail { font-size: 0.8rem; color: var(--silver); margin-top: 4px; }
+
+.data-table-wrap {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.data-table-wrap h3 {
+  padding: 16px 20px 12px;
+  font-size: 1rem;
+  color: var(--deep-slate);
+  border-bottom: 1px solid var(--cloud);
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+thead th {
+  background: var(--cloud);
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--deep-slate);
+  position: sticky;
+  top: 0;
+}
+tbody td { padding: 10px 14px; border-bottom: 1px solid #f0f0f0; }
+tbody tr:hover { background: #fafcfd; }
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-ida { background: rgba(255,111,97,0.12); color: var(--ida-color); }
+.badge-reno { background: rgba(123,165,189,0.15); color: #4a7a94; }
+.badge-shared { background: rgba(156,168,176,0.15); color: #6b7680; }
+
+.amount { font-family: 'SF Mono', 'Consolas', monospace; font-weight: 600; }
+.amount.ida-amt { color: var(--ida-color); }
+.amount.reno-amt { color: #4a7a94; }
+
+.chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+.chart-container {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.bar-chart { margin-top: 12px; }
+.bar-row { display: flex; align-items: center; margin-bottom: 8px; gap: 10px; }
+.bar-label { width: 140px; font-size: 0.78rem; text-align: right; flex-shrink: 0; }
+.bar-track { flex: 1; height: 22px; background: #f0f0f0; border-radius: 4px; position: relative; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; display: flex; align-items: center; padding-left: 6px; }
+.bar-fill span { font-size: 0.7rem; color: white; font-weight: 600; white-space: nowrap; }
+.bar-fill.ida-bar { background: var(--ida-color); }
+.bar-fill.reno-bar { background: var(--reno-color); }
+
+.stacked-bar { height: 36px; display: flex; border-radius: 6px; overflow: hidden; margin: 12px 0; }
+.stacked-segment { display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: 600; transition: width 0.6s; }
+
+.floorplan-container {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 20px;
+  min-height: 600px;
+}
+
+.floorplan-viewer {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+.floorplan-toolbar {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--cloud);
+  border-bottom: 1px solid #e0e0e0;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.tool-btn {
+  padding: 6px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.15s;
+}
+
+.tool-btn:hover { border-color: var(--steel-teal); color: var(--steel-teal); }
+.tool-btn.active { background: var(--steel-teal); color: white; border-color: var(--steel-teal); }
+
+.floor-selector { margin-left: auto; }
+.floor-selector select { padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 0.8rem; }
+
+.floorplan-canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: 620px;
+  overflow: auto;
+}
+
+.floorplan-svg { width: 100%; height: 100%; }
+
+.room-rect {
+  fill: rgba(123,165,189,0.08);
+  stroke: var(--steel-teal);
+  stroke-width: 1.5;
+  cursor: pointer;
+  transition: fill 0.2s;
+}
+
+.room-rect:hover { fill: rgba(123,165,189,0.2); }
+
+.room-label {
+  font-size: 11px;
+  fill: var(--deep-slate);
+  text-anchor: middle;
+  pointer-events: none;
+  font-weight: 500;
+}
+
+.room-dims {
+  font-size: 9px;
+  fill: var(--silver);
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panel-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 16px;
+}
+
+.panel-card h4 { font-size: 0.85rem; color: var(--deep-slate); margin-bottom: 10px; }
+
+.photo-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.photo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--coral); flex-shrink: 0; }
+
+.measurement-display {
+  background: var(--cloud);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.85rem;
+}
+
+.measurement-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.measurement-row .mval { font-weight: 600; font-family: monospace; }
+
+.split-slider-row { display: flex; align-items: center; gap: 10px; }
+
+.split-slider {
+  -webkit-appearance: none;
+  width: 120px;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--ida-color), var(--reno-color));
+  outline: none;
+}
+
+.split-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--deep-slate);
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+.split-pct { font-size: 0.8rem; font-family: monospace; min-width: 80px; }
+
+.upload-zone {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  color: var(--silver);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.upload-zone:hover { border-color: var(--steel-teal); color: var(--steel-teal); }
+.upload-zone input { display: none; }
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.show { display: flex; }
+
+.modal {
+  background: white;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.modal h3 { margin-bottom: 16px; color: var(--deep-slate); }
+.modal-close { float: right; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--silver); }
+
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: var(--deep-slate); }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.btn-primary { background: var(--steel-teal); color: white; }
+.btn-primary:hover { background: var(--deep-slate); }
+.btn-outline { background: white; border: 1px solid #ccc; }
+
+.legend { display: flex; gap: 16px; margin: 12px 0; font-size: 0.8rem; align-items: center; }
+.legend-dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-right: 4px; vertical-align: middle; }
+
+.export-bar { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 16px; }
+
+.totals-row td { font-weight: 700; background: var(--cloud); border-top: 2px solid var(--steel-teal); }
+
+@media (max-width: 900px) {
+  .chart-row { grid-template-columns: 1fr; }
+  .floorplan-container { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>1674 Jefferson Ave - Hurricane Ida LIGA Trial Prep Dashboard</h1>
+    <div class="subtitle">David St Marie &amp; Anna Sampere v. Louisiana Insurance Guaranty Association (LIGA)</div>
+  </div>
+  <div class="case-info">
+    <div>Trainque Group Construction</div>
+    <div>Project #808 | Contract: $664,174.90</div>
+  </div>
+</div>
+
+<div class="nav-tabs">
+  <button class="nav-tab active" data-tab="overview">Overview</button>
+  <button class="nav-tab" data-tab="invoices">Invoices</button>
+  <button class="nav-tab" data-tab="breakdown">Ida vs Renovation</button>
+  <button class="nav-tab" data-tab="floorplan">Floor Plan &amp; Photos</button>
+  <button class="nav-tab" data-tab="measurements">Measurements</button>
+  <button class="nav-tab" data-tab="digitaltwin">Digital Twin</button>
+  <button class="nav-tab" data-tab="windforces">Wind Forces</button>
+</div>
+
+<!-- OVERVIEW TAB -->
+<div id="tab-overview" class="tab-content active">
+  <div class="summary-grid" id="overviewCards"></div>
+  <div class="chart-row">
+    <div class="chart-container">
+      <h4>Contract Allocation: Ida vs Renovation</h4>
+      <div class="legend">
+        <span><span class="legend-dot" style="background:var(--ida-color)"></span> Hurricane Ida</span>
+        <span><span class="legend-dot" style="background:var(--reno-color)"></span> Renovation</span>
+      </div>
+      <div class="stacked-bar" id="overviewStackedBar"></div>
+      <div class="bar-chart" id="categoryBars"></div>
+    </div>
+    <div class="chart-container">
+      <h4>Ida Expenditure Breakdown</h4>
+      <div class="bar-chart" id="idaExpBars"></div>
+    </div>
+  </div>
+  <div class="data-table-wrap">
+    <h3>Ida Claimed Expenditures Summary</h3>
+    <div id="idaExpTable"></div>
+  </div>
+</div>
+
+<!-- INVOICES TAB -->
+<div id="tab-invoices" class="tab-content">
+  <div class="export-bar">
+    <button class="btn btn-outline" id="exportCSVBtn">Export CSV</button>
+  </div>
+  <div class="summary-grid" id="invoiceSummaryCards"></div>
+  <div class="data-table-wrap">
+    <h3>Trainque Group Invoices - All Line Items</h3>
+    <div id="invoiceTableWrap"></div>
+  </div>
+</div>
+
+<!-- BREAKDOWN TAB -->
+<div id="tab-breakdown" class="tab-content">
+  <p style="margin-bottom:16px;font-size:0.9rem;color:var(--silver)">
+    Adjust the sliders to allocate each budget line item between Hurricane Ida and Renovation.
+    The dashboard totals update in real-time.
+  </p>
+  <div class="summary-grid" id="breakdownSummary"></div>
+  <div class="data-table-wrap">
+    <h3>Budget Line Item Allocation</h3>
+    <div style="max-height:600px;overflow-y:auto" id="breakdownTableWrap"></div>
+  </div>
+</div>
+
+<!-- FLOOR PLAN TAB -->
+<div id="tab-floorplan" class="tab-content">
+  <div class="floorplan-container">
+    <div class="floorplan-viewer">
+      <div class="floorplan-toolbar">
+        <button class="tool-btn active" id="btnSelect" data-tool="select">Select</button>
+        <button class="tool-btn" id="btnPin" data-tool="pin">Drop Photo Pin</button>
+        <button class="tool-btn" id="btnMeasure" data-tool="measure">Measure</button>
+        <button class="tool-btn" id="btnLockPins" style="font-size:0.85rem">&#128275; Unlock</button>
+        <div class="floor-selector">
+          <select id="floorSelect">
+            <option value="first">First Floor</option>
+            <option value="second">Second Floor</option>
+            <option value="basement">Basement</option>
+          </select>
+        </div>
+      </div>
+      <div class="floorplan-canvas-wrap" id="canvasWrap" style="position:relative;height:700px;overflow:hidden;background:#fff">
+        <img id="floorplanImg" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain" alt="Floor Plan">
+        <svg id="floorplanSVG" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none" viewBox="0 0 500 700"></svg>
+      </div>
+    </div>
+    <div class="side-panel">
+      <div class="panel-card">
+        <h4>Selected Room</h4>
+        <div id="roomInfo" style="font-size:0.85rem;color:var(--silver)">Click on the floor plan to drop a pin</div>
+      </div>
+      <div class="panel-card">
+        <h4>Photo Log <span id="photoCountBadge" style="font-size:0.7rem;color:var(--silver);font-weight:400"></span></h4>
+        <div class="upload-zone" id="uploadZone">
+          Click to upload photos<br><span style="font-size:0.75rem">JPG, PNG accepted</span>
+          <input type="file" id="photoInput" accept="image/*" multiple>
+        </div>
+        <div id="photoLibraryPreview" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:3px;max-height:80px;overflow-y:auto"></div>
+        <div id="photoList" style="margin-top:8px;max-height:250px;overflow-y:auto"></div>
+      </div>
+      <div class="panel-card">
+        <h4>Measurements</h4>
+        <div class="measurement-display" id="measurementInfo">
+          <div style="color:var(--silver);font-size:0.85rem">Use the Measure tool to click two points on the floor plan</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MEASUREMENTS TAB -->
+<div id="tab-measurements" class="tab-content">
+  <p style="margin-bottom:16px;font-size:0.9rem;color:var(--silver)">
+    Room dimensions from the architectural plans. Toggle Ida damage per room and see updated area allocations.
+  </p>
+  <div class="summary-grid" id="measurementSummaryCards"></div>
+  <div class="data-table-wrap">
+    <h3>Room Dimensions &amp; Damage Allocation</h3>
+    <div id="measurementTableWrap"></div>
+  </div>
+</div>
+
+<!-- DIGITAL TWIN TAB -->
+<div id="tab-digitaltwin" class="tab-content">
+  <div style="display:flex;gap:16px;height:calc(100vh - 140px);min-height:600px">
+    <div style="flex:1;background:white;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.06);overflow:hidden;position:relative">
+      <div style="position:absolute;top:12px;left:12px;z-index:10;display:flex;gap:6px;flex-wrap:wrap">
+        <button class="tool-btn active" id="dt3d" onclick="setDTView('3d')">3D View</button>
+        <button class="tool-btn" id="dtFront" onclick="setDTView('front')">Front</button>
+        <button class="tool-btn" id="dtRear" onclick="setDTView('rear')">Rear</button>
+        <button class="tool-btn" id="dtLeft" onclick="setDTView('left')">Left Side</button>
+        <button class="tool-btn" id="dtRight" onclick="setDTView('right')">Right Side</button>
+        <button class="tool-btn" id="dtTop" onclick="setDTView('top')">Top</button>
+      </div>
+      <div style="position:absolute;bottom:12px;left:12px;z-index:10;display:flex;gap:6px">
+      </div>
+      <div style="position:absolute;top:12px;right:12px;z-index:10;background:rgba(255,255,255,0.9);padding:8px 12px;border-radius:8px;font-size:0.75rem;color:#666">
+        Drag to rotate | Scroll to zoom | Right-drag to pan
+      </div>
+      <div id="dtCanvas" style="width:100%;height:100%"></div>
+    </div>
+    <div style="width:260px;display:flex;flex-direction:column;gap:12px">
+      <div class="panel-card">
+        <h4>Building Info</h4>
+        <div class="measurement-display" style="font-size:0.8rem">
+          <div class="measurement-row"><span>Address</span><span class="mval">1674 Jefferson Ave</span></div>
+          <div class="measurement-row"><span>Footprint</span><span class="mval">L-shaped, ~30'x80'</span></div>
+          <div class="measurement-row"><span>Levels</span><span class="mval">Basement + 2</span></div>
+          <div class="measurement-row"><span>1st Floor Living</span><span class="mval">2,466 SF</span></div>
+          <div class="measurement-row"><span>2nd Floor Living</span><span class="mval">2,061 SF</span></div>
+          <div class="measurement-row"><span>Total Living</span><span class="mval">4,527 SF</span></div>
+          <div class="measurement-row"><span>Porches/Balcony</span><span class="mval">1,045 SF</span></div>
+          <div class="measurement-row"><span>Grand Total</span><span class="mval">5,564 SF</span></div>
+          <div class="measurement-row"><span>1st Floor Ceil</span><span class="mval">14'-0"</span></div>
+          <div class="measurement-row"><span>2nd Floor Ceil</span><span class="mval">12'-0"</span></div>
+          <div class="measurement-row"><span>Raised Found.</span><span class="mval">7'-0" AFF</span></div>
+          <div class="measurement-row"><span>Roof Slope</span><span class="mval">6:12 hip</span></div>
+          <div class="measurement-row"><span>Lot</span><span class="mval">60' x 135' (8,100 SF)</span></div>
+          <div class="measurement-row"><span>Siding</span><span class="mval">Hardie Lap</span></div>
+        </div>
+      </div>
+      <div class="panel-card">
+        <h4>Floor Visibility</h4>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:0.8rem">
+          <label><input type="checkbox" checked onchange="toggleFloorVis('roof',this.checked)"> Roof</label>
+          <label><input type="checkbox" checked onchange="toggleFloorVis('second',this.checked)"> 2nd Floor</label>
+          <label><input type="checkbox" checked onchange="toggleFloorVis('first',this.checked)"> 1st Floor</label>
+          <label><input type="checkbox" checked onchange="toggleFloorVis('basement',this.checked)"> Basement</label>
+          <label><input type="checkbox" checked onchange="toggleFloorVis('porch',this.checked)"> Porches &amp; Deck</label>
+        </div>
+      </div>
+      <div class="panel-card">
+        <h4>Legend</h4>
+        <div style="font-size:0.78rem;display:flex;flex-direction:column;gap:4px">
+          <div><span class="legend-dot" style="background:#8fb0be"></span> Hardie Lap Siding (Steel Blue)</div>
+          <div><span class="legend-dot" style="background:#f0f0f0;border:1px solid #ccc"></span> White Trim / Columns</div>
+          <div><span class="legend-dot" style="background:#6b6b6b"></span> Roof (Arch. Shingles)</div>
+          <div><span class="legend-dot" style="background:#6b1a1a"></span> Front Door (Maroon)</div>
+          <div><span class="legend-dot" style="background:#8a8a8a"></span> Porch Floor</div>
+          <div><span class="legend-dot" style="background:rgba(255,111,97,0.7)"></span> Ida Damage Zone</div>
+        </div>
+      </div>
+      <div class="panel-card">
+        <h4>Architect</h4>
+        <div style="font-size:0.78rem;color:var(--silver)">
+          Jessica Becker Architecture (DWG)<br>
+          Joseph Flynn Architect (Elevations)<br>
+          Coastal Engineering Solutions (Survey)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WIND FORCES TAB -->
+<div id="tab-windforces" class="tab-content">
+  <div style="display:flex;gap:16px;min-height:550px">
+    <div style="flex:1;background:white;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.06);overflow:hidden;position:relative">
+      <div style="position:absolute;top:12px;left:12px;z-index:10;display:flex;gap:8px">
+        <button class="tool-btn" id="btnWindAnimate" style="background:#ff6f61;color:white;border-color:#ff6f61;font-weight:700">Animate Storm</button>
+        <button class="tool-btn" id="btnWindReset">Reset</button>
+      </div>
+      <div id="windCanvas" style="width:100%;height:100%;min-height:500px"></div>
+    </div>
+    <div style="width:280px;display:flex;flex-direction:column;gap:12px">
+      <div class="panel-card">
+        <h4>Hurricane Ida Wind Analysis</h4>
+        <div class="measurement-display" style="font-size:0.8rem">
+          <div class="measurement-row"><span>Event</span><span class="mval">Hurricane Ida</span></div>
+          <div class="measurement-row"><span>Date</span><span class="mval">Aug 29, 2021</span></div>
+          <div class="measurement-row"><span>Category</span><span class="mval">4 at landfall</span></div>
+          <div class="measurement-row"><span>Max Sustained</span><span class="mval">150 mph</span></div>
+          <div class="measurement-row"><span>NOLA Gusts</span><span class="mval">100-110 mph</span></div>
+          <div class="measurement-row"><span>Wind Direction</span><span class="mval">S to NW</span></div>
+        </div>
+      </div>
+      <div class="panel-card">
+        <h4>Racking Mechanism</h4>
+        <div style="font-size:0.78rem;color:var(--silver);line-height:1.5">
+          Hurricane force winds from the south-southeast pressed against the east (Danneel St) face of the home.
+          The wind flow was caught in the inside corner where the stub-out meets the main house body,
+          creating a <strong style="color:var(--coral)">vortex pressure zone</strong> that amplified forces
+          at the rear-right corner. This concentrated lateral load caused the rear foundation to rack,
+          evidenced by <strong style="color:var(--coral)">shear cracking along rear seam walls</strong>
+          and separation at the rear of the home.
+        </div>
+      </div>
+      <div class="panel-card">
+        <h4>Wind Pressure (estimated)</h4>
+        <div class="measurement-display" style="font-size:0.8rem">
+          <div class="measurement-row"><span>East face (direct)</span><span class="mval" style="color:var(--coral)">45 psf</span></div>
+          <div class="measurement-row"><span>South face</span><span class="mval" style="color:#e6a817">35 psf</span></div>
+          <div class="measurement-row"><span>Corner vortex</span><span class="mval" style="color:#cc0000">65+ psf</span></div>
+          <div class="measurement-row"><span>Roof uplift</span><span class="mval" style="color:var(--coral)">-55 psf</span></div>
+          <div class="measurement-row"><span>Leeward (west)</span><span class="mval">-20 psf</span></div>
+        </div>
+      </div>
+      <div class="panel-card">
+        <h4>Resulting Damage</h4>
+        <div style="font-size:0.78rem;color:var(--silver);line-height:1.5">
+          <div style="margin-bottom:4px"><span style="color:var(--coral)">1.</span> Rear foundation racking &amp; shear cracks</div>
+          <div style="margin-bottom:4px"><span style="color:var(--coral)">2.</span> Rear seam wall separation</div>
+          <div style="margin-bottom:4px"><span style="color:var(--coral)">3.</span> Water intrusion from windblown rain</div>
+          <div style="margin-bottom:4px"><span style="color:var(--coral)">4.</span> Chimney seam water intrusion</div>
+          <div style="margin-bottom:4px"><span style="color:var(--coral)">5.</span> Damaged exterior siding</div>
+          <div style="margin-bottom:4px"><span style="color:var(--coral)">6.</span> Damaged/broken windows</div>
+          <div><span style="color:var(--coral)">7.</span> Mold from prolonged moisture</div>
+        </div>
+      </div>
+      <div class="panel-card">
+        <h4>Legend</h4>
+        <div style="font-size:0.78rem;display:flex;flex-direction:column;gap:4px">
+          <div><span class="legend-dot" style="background:#ff3333"></span> High pressure / vortex zone</div>
+          <div><span class="legend-dot" style="background:#ff6f61"></span> Direct wind pressure</div>
+          <div><span class="legend-dot" style="background:#ffaa33"></span> Moderate pressure</div>
+          <div><span class="legend-dot" style="background:#44aaff"></span> Suction / leeward</div>
+          <div><span class="legend-dot" style="background:rgba(255,255,0,0.7)"></span> Wind flow arrows</div>
+          <div><span class="legend-dot" style="background:#ff0000"></span> Racking force direction</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Photo Pin Modal -->
+<div class="modal-overlay" id="photoPinModal">
+  <div class="modal">
+    <button class="modal-close" id="modalCloseBtn">&times;</button>
+    <h3>Tag Photo to Location</h3>
+    <div class="form-group">
+      <label>Room</label>
+      <select id="pinRoom"></select>
+      <input type="text" id="pinRoomCustom" placeholder="Or type a custom room name..." style="margin-top:4px;display:none">
+      <div style="margin-top:4px"><label style="font-size:0.75rem;color:var(--silver);cursor:pointer"><input type="checkbox" id="pinRoomManual" style="margin-right:4px"> Enter room name manually</label></div>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <input type="text" id="pinDesc" placeholder="e.g., Water damage on ceiling near window">
+    </div>
+    <div class="form-group">
+      <label>Damage Type</label>
+      <select id="pinDamageType">
+        <option value="water">Water Intrusion</option>
+        <option value="structural">Structural / Cracking</option>
+        <option value="wind">Wind Damage</option>
+        <option value="mold">Mold</option>
+        <option value="exterior">Exterior Damage</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Category</label>
+      <select id="pinCategory">
+        <option value="ida">Hurricane Ida</option>
+        <option value="reno">Renovation</option>
+        <option value="pre-existing">Pre-existing (NOS&amp;WB)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Attach Photo</label>
+      <select id="pinPhoto">
+        <option value="">-- No photo --</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" id="savePinBtn">Save Pin</button>
+  </div>
+</div>
+
+<script>
+(function() {
+"use strict";
+
+// ==================== DATA ====================
+var invoices = [
+  { num: 848, date: '2023-11-27', items: [
+    { desc: 'Interior Demo', amount: 11250.00, cat: 'ida' },
+    { desc: 'Dumpster Budget', amount: 1875.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Windows & Exterior Doors', amount: 8226.36, cat: 'shared', idaPct: 0 },
+    { desc: 'Management Fee', amount: 4270.27, cat: 'shared', idaPct: 0 }
+  ], total: 25621.63 },
+  { num: 856, date: '2023-12-16', items: [
+    { desc: 'Interior Demo', amount: 10000.00, cat: 'ida' },
+    { desc: 'Exterior Demo', amount: 4500.00, cat: 'ida' },
+    { desc: 'Management Fee', amount: 2900.00, cat: 'shared', idaPct: 0 }
+  ], total: 17400.00 },
+  { num: 866, date: '2024-01-04', items: [
+    { desc: 'Interior Demo', amount: 1251.00, cat: 'ida' },
+    { desc: 'Exterior Demo', amount: 2499.70, cat: 'ida' },
+    { desc: 'Framing Package', amount: 5000.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Framing Labor', amount: 15000.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Dumpster Budget', amount: 350.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Management Fee', amount: 4820.14, cat: 'shared', idaPct: 0 },
+    { desc: 'CO: Custom Wood Windows', amount: 3064.60, cat: 'ida' }
+  ], total: 31985.44 },
+  { num: 875, date: '2024-01-26', items: [
+    { desc: 'Framing Package', amount: 5857.99, cat: 'shared', idaPct: 0 },
+    { desc: 'Framing Labor', amount: 9000.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Foundation Budget', amount: 17875.00, cat: 'ida' },
+    { desc: 'Sanitation', amount: 250.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Dumpster Budget', amount: 700.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Management Fee', amount: 6736.60, cat: 'shared', idaPct: 0 },
+    { desc: 'CO: Additional Footing', amount: 4740.00, cat: 'ida' }
+  ], total: 45159.59 },
+  { num: 886, date: '2024-02-09', items: [
+    { desc: 'Framing Package', amount: 7755.04, cat: 'shared', idaPct: 0 },
+    { desc: 'Framing Labor', amount: 5000.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Windows & Exterior Doors', amount: 8514.97, cat: 'shared', idaPct: 0 },
+    { desc: 'Management Fee', amount: 4254.00, cat: 'shared', idaPct: 0 },
+    { desc: 'CO: Custom Wood Windows', amount: 1225.84, cat: 'ida' }
+  ], total: 26749.85 },
+  { num: 892, date: '2024-02-23', items: [
+    { desc: 'Framing Package', amount: 9843.30, cat: 'shared', idaPct: 0 },
+    { desc: 'Framing Labor', amount: 5999.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Steel Beams', amount: 2001.00, cat: 'reno' },
+    { desc: 'Sanitation', amount: 250.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Dumpster Budget', amount: 1150.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Management Fee', amount: 3848.66, cat: 'shared', idaPct: 0 },
+    { desc: 'CO: Custom Wood Windows', amount: 3064.11, cat: 'ida' }
+  ], total: 26156.07 },
+  { num: 894, date: '2024-03-01', items: [
+    { desc: 'Electrical Budget', amount: 9900.00, cat: 'reno' },
+    { desc: 'Management Fee', amount: 1980.00, cat: 'shared', idaPct: 0 },
+    { desc: 'CO: Temp Pole', amount: 1440.00, cat: 'reno' }
+  ], total: 13320.00 },
+  { num: 909, date: '2024-04-12', items: [
+    { desc: 'Jobsite Prep', amount: 500.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Framing Package', amount: 2625.35, cat: 'shared', idaPct: 0 },
+    { desc: 'Siding Scope', amount: 26218.66, cat: 'ida' },
+    { desc: 'Sanitation', amount: 131.34, cat: 'shared', idaPct: 0 },
+    { desc: 'Dumpster Budget', amount: 700.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Back Porch Roofing', amount: 4180.00, cat: 'ida' },
+    { desc: 'Management Fee', amount: 6871.07, cat: 'shared', idaPct: 0 }
+  ], total: 41226.42 },
+  { num: 918, date: '2024-04-26', items: [
+    { desc: 'Electrical Budget', amount: 9480.00, cat: 'reno' },
+    { desc: 'Plumbing Scope', amount: 23437.50, cat: 'reno' },
+    { desc: 'Consumables', amount: 196.20, cat: 'shared', idaPct: 0 },
+    { desc: 'Management Fee', amount: 6622.74, cat: 'shared', idaPct: 0 }
+  ], total: 39736.44 },
+  { num: 919, date: '2024-05-02', items: [
+    { desc: 'Framing Package', amount: 608.45, cat: 'shared', idaPct: 0 },
+    { desc: 'HVAC', amount: 23359.00, cat: 'reno' },
+    { desc: 'Dumpster Budget', amount: 1350.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Consumables', amount: 62.73, cat: 'shared', idaPct: 0 },
+    { desc: 'Management Fee', amount: 5006.04, cat: 'shared', idaPct: 0 }
+  ], total: 30386.22 },
+  { num: 932, date: '2024-05-23', items: [
+    { desc: 'Drywall Budget', amount: 22400.00, cat: 'ida' },
+    { desc: 'Exterior Paint', amount: 9100.00, cat: 'reno' },
+    { desc: 'Insulation', amount: 6000.00, cat: 'ida' },
+    { desc: 'Steel Beams', amount: 1350.00, cat: 'reno' },
+    { desc: 'Sanitation', amount: 131.34, cat: 'shared', idaPct: 0 },
+    { desc: 'Dumpster Budget', amount: 450.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Consumables', amount: 97.56, cat: 'shared', idaPct: 0 },
+    { desc: 'Management Fee', amount: 7905.78, cat: 'shared', idaPct: 0 },
+    { desc: 'CO#114: Soundproofing', amount: 2710.18, cat: 'reno' },
+    { desc: 'CO: Additional Framing', amount: 6570.00, cat: 'shared', idaPct: 0 }
+  ], total: 56714.86 },
+  { num: 945, date: '2024-06-07', items: [
+    { desc: 'Drywall Budget', amount: 6400.00, cat: 'ida' },
+    { desc: 'Interior Paint', amount: 1800.00, cat: 'ida' },
+    { desc: 'Exterior Paint', amount: 6500.00, cat: 'reno' },
+    { desc: 'Sanitation', amount: 131.34, cat: 'shared', idaPct: 0 },
+    { desc: 'Dumpster Budget', amount: 575.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Consumables', amount: 479.61, cat: 'shared', idaPct: 0 },
+    { desc: 'Management Fee', amount: 3177.19, cat: 'shared', idaPct: 0 },
+    { desc: 'CO#135: Reframe for TV', amount: 360.00, cat: 'reno' }
+  ], total: 19423.14 },
+  { num: 953, date: '2024-06-20', items: [
+    { desc: 'Tile Scope', amount: 11750.00, cat: 'reno' },
+    { desc: 'Trim Package', amount: 10931.33, cat: 'ida' },
+    { desc: 'Sanitation', amount: 151.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Dumpster Budget', amount: 450.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Consumables', amount: 227.27, cat: 'shared', idaPct: 0 },
+    { desc: 'Management Fee', amount: 4701.92, cat: 'shared', idaPct: 0 },
+    { desc: 'CO#141: Grout Material', amount: 369.63, cat: 'reno' },
+    { desc: 'CO#144: Tile Material', amount: 1767.00, cat: 'reno' }
+  ], total: 30348.15 },
+  { num: 970, date: '2024-07-18', items: [
+    { desc: 'Drywall Budget', amount: 1600.00, cat: 'ida' },
+    { desc: 'Interior Paint', amount: 10000.00, cat: 'ida' },
+    { desc: 'Exterior Paint', amount: 5200.00, cat: 'reno' },
+    { desc: 'Siding Scope', amount: 5174.23, cat: 'ida' },
+    { desc: 'Stone Budget', amount: 11200.00, cat: 'reno' },
+    { desc: 'Trim Package', amount: 2084.08, cat: 'ida' },
+    { desc: 'Trim Labor', amount: 2125.00, cat: 'ida' },
+    { desc: 'Interior Staircase', amount: 2314.60, cat: 'reno' },
+    { desc: 'Management Fee', amount: 7939.58, cat: 'shared', idaPct: 0 },
+    { desc: 'CO#151: Crown/Paneling', amount: 6166.99, cat: 'reno' }
+  ], total: 53804.48 },
+  { num: 984, date: '2024-08-15', items: [
+    { desc: 'Interior Paint', amount: 9000.00, cat: 'ida' },
+    { desc: 'Trim Labor', amount: 1275.00, cat: 'ida' },
+    { desc: 'Interior Staircase', amount: 5885.14, cat: 'reno' },
+    { desc: 'Gutters', amount: 1900.00, cat: 'ida' },
+    { desc: 'Management Fee', amount: 3612.03, cat: 'shared', idaPct: 0 },
+    { desc: 'CO#185: Staircase Overages', amount: 1137.48, cat: 'reno' }
+  ], total: 22809.65 },
+  { num: 993, date: '2024-08-21', items: [
+    { desc: 'Electrical Budget', amount: 2069.10, cat: 'reno' },
+    { desc: 'HVAC', amount: 3628.31, cat: 'reno' },
+    { desc: 'Management Fee', amount: 1139.48, cat: 'shared', idaPct: 0 },
+    { desc: 'CO#172: Move Panel', amount: 3072.00, cat: 'reno' }
+  ], total: 9908.89 },
+  { num: 999, date: '2024-08-26', items: [
+    { desc: 'Electrical Budget', amount: 3300.00, cat: 'reno' },
+    { desc: 'Drywall Budget', amount: 1600.00, cat: 'ida' },
+    { desc: 'Interior Paint', amount: 1701.00, cat: 'ida' },
+    { desc: 'Siding Scope', amount: 5174.23, cat: 'ida' },
+    { desc: 'Sanitation', amount: 155.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Consumables', amount: 75.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Management Fee', amount: 2401.05, cat: 'shared', idaPct: 0 },
+    { desc: 'CO#174: Cap Chimney', amount: 780.00, cat: 'ida' },
+    { desc: 'CO#193: Stairwell Trim', amount: 2099.38, cat: 'reno' },
+    { desc: 'CO#189: Flooring', amount: 5298.60, cat: 'shared', idaPct: 0 }
+  ], total: 22584.26 },
+  { num: 1013, date: '2024-09-10', items: [
+    { desc: 'CO#189: Flooring', amount: 850.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Jobsite Prep', amount: 1250.10, cat: 'shared', idaPct: 0 },
+    { desc: 'Eng Wood Flooring', amount: 6500.00, cat: 'shared', idaPct: 0 },
+    { desc: 'Vinyl Plank (Apt)', amount: 1650.00, cat: 'reno' },
+    { desc: 'Management Fee', amount: 1550.02, cat: 'shared', idaPct: 0 }
+  ], total: 11800.12 },
+  { num: 1022, date: '2024-09-23', items: [
+    { desc: 'Wood Floor Refinishing', amount: 4719.40, cat: 'shared', idaPct: 0 },
+    { desc: 'Management Fee', amount: 943.88, cat: 'shared', idaPct: 0 }
+  ], total: 5663.28 },
+  { num: 1037, date: '2024-10-07', items: [
+    { desc: 'CO#189: Flooring', amount: 4448.70, cat: 'shared', idaPct: 0 },
+    { desc: 'Wood Floor Refinish', amount: 1890.46, cat: 'shared', idaPct: 0 },
+    { desc: 'Management Fee', amount: 378.00, cat: 'shared', idaPct: 0 }
+  ], total: 6717.16 },
+  { num: 1045, date: '2024-10-15', items: [
+    { desc: 'Interior Paint', amount: 3000.00, cat: 'ida' },
+    { desc: 'Fireplace Budget', amount: 3000.00, cat: 'reno' },
+    { desc: 'Management Fee', amount: 1200.00, cat: 'shared', idaPct: 0 }
+  ], total: 7200.00 },
+  { num: 1055, date: '2024-10-30', items: [
+    { desc: 'CO#224: Stone Material', amount: 6319.80, cat: 'reno' },
+    { desc: 'CO#237: Medallions/Mantle', amount: 1200.00, cat: 'reno' },
+    { desc: 'CO#185: Staircase (pt2)', amount: 2000.14, cat: 'reno' },
+    { desc: 'CO#225: Kitchen Hood', amount: 1980.00, cat: 'reno' },
+    { desc: 'CO#235: Light Bulbs', amount: 799.43, cat: 'ida' },
+    { desc: 'CO#243: Add Paint', amount: 7410.00, cat: 'reno' },
+    { desc: 'Countertop', amount: 8400.00, cat: 'reno' },
+    { desc: 'Stone Budget', amount: 800.40, cat: 'reno' },
+    { desc: 'Trim Labor', amount: 425.00, cat: 'ida' },
+    { desc: 'Fireplace', amount: 2000.00, cat: 'reno' },
+    { desc: 'Management Fee', amount: 2325.08, cat: 'shared', idaPct: 0 }
+  ], total: 33659.85 },
+  { num: 1057, date: '2024-11-12', items: [
+    { desc: 'CO#185: Staircase', amount: 2000.14, cat: 'reno' },
+    { desc: 'Electrical Budget', amount: 4950.00, cat: 'reno' },
+    { desc: 'Plumbing Scope', amount: 7387.73, cat: 'reno' },
+    { desc: 'Windows & Ext Doors', amount: 1938.92, cat: 'shared', idaPct: 0 },
+    { desc: 'Management Fee', amount: 2855.33, cat: 'shared', idaPct: 0 }
+  ], total: 19132.12 },
+  { num: 1062, date: '2024-11-18', items: [
+    { desc: 'CO#256: Moving Brick', amount: 720.00, cat: 'reno' },
+    { desc: 'CO#243: Add Paint', amount: 1725.00, cat: 'reno' },
+    { desc: 'CO#267: Deck Framing', amount: 5464.57, cat: 'reno' },
+    { desc: 'CO#273: BFE Cert', amount: 180.00, cat: 'shared', idaPct: 0 },
+    { desc: 'CO#286: Pre-punch', amount: 1440.00, cat: 'reno' },
+    { desc: 'Jobsite Prep', amount: 1249.80, cat: 'shared', idaPct: 0 },
+    { desc: 'Electrical Budget', amount: 3300.00, cat: 'reno' },
+    { desc: 'HVAC', amount: 2998.60, cat: 'reno' },
+    { desc: 'Plumbing Scope', amount: 3425.00, cat: 'reno' },
+    { desc: 'Interior Paint', amount: 4500.00, cat: 'ida' },
+    { desc: 'Exterior Paint', amount: 5200.00, cat: 'reno' },
+    { desc: 'Sanitation', amount: 599.76, cat: 'shared', idaPct: 0 },
+    { desc: 'Dumpster Budget', amount: 397.60, cat: 'shared', idaPct: 0 },
+    { desc: 'Consumables', amount: 361.80, cat: 'shared', idaPct: 0 },
+    { desc: 'Management Fee', amount: 4406.51, cat: 'shared', idaPct: 0 }
+  ], total: 35968.64 }
+];
+
+var changeOrders = [
+  { num: 36, date: '2023-10-23', desc: 'Base Flood Elevation Certificate', amount: 250.00, cat: 'shared' },
+  { num: 57, date: '2023-12-28', desc: 'Additional Footing Work', amount: 4740.00, cat: 'ida' },
+  { num: 62, date: '2024-01-12', desc: 'Custom Wood Windows (HDLC)', amount: 7355.04, cat: 'ida' },
+  { num: 81, date: '2024-03-01', desc: 'Temp Pole', amount: 1440.00, cat: 'reno' },
+  { num: 114, date: '2024-05-08', desc: 'Insulation / Soundproofing', amount: 2710.18, cat: 'reno' },
+  { num: 135, date: '2024-06-03', desc: 'Demo & Reframe for TV', amount: 360.00, cat: 'reno' },
+  { num: 141, date: '2024-06-18', desc: 'Grout Material Pick Up', amount: 369.63, cat: 'reno' },
+  { num: 144, date: '2024-06-20', desc: 'Tile Setting Material', amount: 1767.00, cat: 'reno' },
+  { num: 151, date: '2024-06-28', desc: 'Crown Moulding & Paneling', amount: 6166.99, cat: 'reno' },
+  { num: 172, date: '2024-07-30', desc: 'Additional Paint Scope', amount: 10860.00, cat: 'reno' },
+  { num: 174, date: '2024-08-01', desc: 'Cap Chimney', amount: 780.00, cat: 'ida' },
+  { num: 185, date: '2024-08-16', desc: 'Staircase Overages', amount: 3137.48, cat: 'reno' },
+  { num: 224, date: '2024-10-24', desc: 'Stone Material Difference', amount: 6319.80, cat: 'reno' },
+  { num: 225, date: '2024-10-24', desc: 'Kitchen Hood', amount: 1980.00, cat: 'reno' },
+  { num: 237, date: '2024-11-07', desc: 'Ceiling Medallions & Mantle', amount: 1200.00, cat: 'reno' },
+  { num: 243, date: '2024-11-08', desc: 'Additional Paint', amount: 10860.00, cat: 'reno' },
+  { num: 256, date: '2024-12-03', desc: 'Moving Brick', amount: 720.00, cat: 'reno' }
+];
+
+// SELA / NOS&WB Front Porch Repair Invoices (Pre-Ida, 2021-2022)
+var selaInvoices = [
+  { num: 333, date: '2021-02-28', items: [
+    { desc: 'CO#1 Permit Fees', amount: 475.00 }
+  ], total: 475.00 },
+  { num: 406, date: '2021-07-20', items: [
+    { desc: 'Demo and Framing (76%)', amount: 5500.00 },
+    { desc: 'Framing Materials (68%)', amount: 3928.72 },
+    { desc: 'Dumpster 1', amount: 400.00 },
+    { desc: 'Management Fee (14%)', amount: 1965.74 },
+    { desc: 'Dumpster 2', amount: 400.00 }
+  ], total: 12194.46 },
+  { num: 413, date: '2021-08-10', items: [
+    { desc: 'Demo and Framing (100%)', amount: 1700.00 },
+    { desc: 'Framing Materials', amount: 1821.28 },
+    { desc: 'Management Fee (19%)', amount: 704.26 },
+    { desc: 'Framing Labor Additional (soffit, roof deck)', amount: 1625.00 },
+    { desc: 'Framing Materials Overage', amount: 4298.34 }
+  ], total: 10148.88 },
+  { num: 417, date: '2021-08-19', items: [
+    { desc: 'Roofing (79%)', amount: 6300.00 },
+    { desc: 'Management Fee (28%)', amount: 1260.00 },
+    { desc: 'CO#5 Roof Replacement Main House', amount: 22824.00 },
+    { desc: 'CO#6 Dumpster #3 for roof', amount: 400.00 }
+  ], total: 30784.00 },
+  { num: 463, date: '2021-11-01', items: [
+    { desc: 'Gas Service to Porch Ceiling/Lantern', amount: 1200.00 }
+  ], total: 1200.00 },
+  { num: 474, date: '2021-11-19', items: [
+    { desc: 'Porch Floors & Waterproofing', amount: 4585.00 },
+    { desc: 'Trim Work and Siding', amount: 7415.00 },
+    { desc: 'Management Fee', amount: 1483.00 },
+    { desc: 'Soffit Framing Materials & Porch 1x4s', amount: 1465.41 }
+  ], total: 14948.41 },
+  { num: 523, date: '2022-02-25', items: [
+    { desc: 'Trim Work and Siding', amount: 3800.00 },
+    { desc: 'Column Install Upstairs', amount: 1600.00 },
+    { desc: 'Management Fee', amount: 2500.00 },
+    { desc: 'Aeratis Flooring Board Install Upstairs', amount: 4632.00 }
+  ], total: 12532.00 },
+  { num: 584, date: '2022-06-30', items: [
+    { desc: 'Porch Floors & Waterproofing', amount: 4343.00 },
+    { desc: 'Trim Work and Siding', amount: 1442.00 },
+    { desc: 'Columns Installation', amount: 3200.00 },
+    { desc: 'Roofing Parapet Metal Cap', amount: 1658.00 },
+    { desc: 'Management Fee', amount: 2128.60 }
+  ], total: 12771.60 },
+  { num: 593, date: '2022-07-22', items: [
+    { desc: 'Columns', amount: 7500.00 },
+    { desc: 'Paint', amount: 6266.00 },
+    { desc: 'Electrical', amount: 1940.00 },
+    { desc: 'Management Fee', amount: 3140.00 },
+    { desc: 'Dumpster', amount: 400.00 }
+  ], total: 19246.00 },
+  { num: 629, date: '2022-10-24', items: [
+    { desc: 'Porch Railing Balance + MGMT', amount: 10716.00 }
+  ], total: 10716.00 },
+  { num: 661, date: '2022-12-19', items: [
+    { desc: 'Gutters', amount: 1972.86 },
+    { desc: 'Management Fee', amount: 394.58 }
+  ], total: 2367.44 }
+];
+
+var budgetItems = [
+  // ── DEMO ──
+  { name: 'Interior Demo - 1st Floor Gut to Studs', budget: 11250, cat: 'ida', idaPct: 0, detail: 'Gut 1st floor to studs; remove interior staircases for framing scope (Inv #848)' },
+  { name: 'Interior Demo - 2nd Floor Selective Gut', budget: 10000, cat: 'ida', idaPct: 0, detail: 'Gut areas for layout reconfiguration; all exterior walls for insulation; gut bathrooms, laundry, stairwells (Inv #856)' },
+  { name: 'Interior Demo - Remaining', budget: 1250, cat: 'ida', idaPct: 0, detail: 'Final interior demo completion (Inv #866)' },
+  { name: 'Exterior Demo - Rear Overhang & Concrete', budget: 4500, cat: 'ida', idaPct: 0, detail: 'Lower rear overhang of grill area; concrete at grill area for new foundation, rear addition and deck (Inv #856)' },
+  { name: 'Exterior Demo - Remaining', budget: 2500, cat: 'ida', idaPct: 0, detail: 'Final exterior demo completion (Inv #866)' },
+
+  // ── JOBSITE ──
+  { name: 'Jobsite Prep & Final Clean', budget: 3000, cat: 'shared', idaPct: 0, detail: 'Jobsite prep and final clean; billed across Inv #909, #1013, #1062' },
+
+  // ── FRAMING ──
+  { name: 'Framing Materials - Incl Ext Staircase & Deck', budget: 31690, cat: 'shared', idaPct: 0, detail: 'All framing materials; updated 8/28/23 to include staircase and deck; subject to market fluctuation. Billed across Inv #866-919' },
+  { name: 'Framing Labor - Interior Walls & Addition', budget: 21000, cat: 'shared', idaPct: 0, detail: 'Frame interior walls, addition, level sitting area floors (Inv #866, #875)' },
+  { name: 'Framing Labor - Deck & Staircases', budget: 14000, cat: 'shared', idaPct: 0, detail: 'Frame deck, exterior staircases (Inv #886, #892)' },
+  { name: 'CO: Additional Framing', budget: 6570, cat: 'shared', idaPct: 0, detail: 'Additional framing discovered during construction (Inv #932)' },
+
+  // ── ELECTRICAL ──
+  { name: 'Electrical - New 200A Panels (Outdoor Main)', budget: 9900, cat: 'reno', idaPct: 0, detail: 'New 200 amp breaker panels, outdoor main. 30% deposit for materials (Inv #894)' },
+  { name: 'Electrical - Rough-In Wiring & Circuits', budget: 13620, cat: 'reno', idaPct: 0, detail: 'Per plans and walk through; all fixtures, dimmers on porches/kitchen/dining; 2 floor outlets in den (Inv #918, #993, #999)' },
+  { name: 'Electrical - Trim Out & Final', budget: 9480, cat: 'reno', idaPct: 0, detail: 'Trim out switches, covers, receptacles, fixture connections. Final inspection (Inv #1057, #1062)' },
+
+  // ── HVAC ──
+  { name: 'HVAC - 1st Floor New System', budget: 25986, cat: 'reno', idaPct: 0, detail: 'Remove existing; new American Standard 5-ton 14 SEER system; new ductwork, registers, refrigerant lines, flue vent (Inv #919)' },
+  { name: 'HVAC - 2nd Floor Service & Duct Runs', budget: 4000, cat: 'reno', idaPct: 0, detail: 'Reuse existing 2nd floor unit; clean, service, add duct runs as needed; install owner vent fans, kitchen hood, make-up air (Inv #993, #1062)' },
+
+  // ── PLUMBING ──
+  { name: 'Plumbing - 1st Floor Rough-In', budget: 23438, cat: 'reno', idaPct: 0, detail: 'Master bath (2 lav, shower, WC), laundry (washer box, tray), 1/2 bath (WC, lav), bar (sink, ice-maker), kitchen (DW, stove, disposal, sink) (Inv #918)' },
+  { name: 'Plumbing - 2nd Floor & Gas Lines', budget: 10812, cat: 'reno', idaPct: 0, detail: '2nd fl bath (WC, 2 lav, T/S combo), new bath (tub/shower, lav, WC), kitchenette; gas lines for dryer, fireplace, stove, 3 HVAC, outdoor grill (Inv #1057, #1062)' },
+
+  // ── DRYWALL ──
+  { name: 'Drywall - 1st Floor Level 4 Finish', budget: 22400, cat: 'ida', idaPct: 0, detail: 'Complete install to level 4 finish on main floor, all walls and ceilings (Inv #932)' },
+  { name: 'Drywall - 2nd Floor Exterior Walls & Baths', budget: 6400, cat: 'ida', idaPct: 0, detail: 'Upstairs exterior walls, bathrooms, areas of new construction, ceilings as needed (Inv #945)' },
+  { name: 'Drywall - Punch & Repairs', budget: 3200, cat: 'ida', idaPct: 0, detail: 'Drywall repairs, patches, touch-ups (Inv #970, #999)' },
+
+  // ── PAINT ──
+  { name: 'Interior Paint - Walls & Ceilings', budget: 21500, cat: 'ida', idaPct: 0, detail: 'Prime, 2 finish coats on all walls and ceilings (Inv #945, #970, #984)' },
+  { name: 'Interior Paint - Trim & Final Coats', budget: 8500, cat: 'ida', idaPct: 0, detail: 'Paint all trim, doors, final touch-up coats (Inv #999, #1045, #1062)' },
+  { name: 'Exterior Paint', budget: 26000, cat: 'reno', idaPct: 0, detail: 'Prime and paint exterior; rear porch posts and ceilings. No front porch (already done in SELA). Billed across Inv #932, #945, #970, #1062' },
+
+  // ── INSULATION ──
+  { name: 'Insulation - R13 Walls & Rockwool', budget: 6000, cat: 'ida', idaPct: 0, detail: 'R13 in walls and Rockwool between apartment and main house walls upstairs (Inv #932)' },
+
+  // ── SIDING ──
+  { name: 'Siding - Demo Existing & New Plywood/Tyvek', budget: 10000, cat: 'ida', idaPct: 0, detail: 'Demo existing wood siding and trim; new plywood where demo; new Tyvek house wrap' },
+  { name: 'Siding - Hardie Lap Install & Trim', budget: 18567, cat: 'ida', idaPct: 0, detail: '6.25" Hardie lap siding with 5" reveal; 6" Hardie trim; front, 1st left bump out, back addition, back right. Inv #909, #970, #999' },
+  { name: 'Siding - Back Porch (Hardie Panels/Columns)', budget: 8000, cat: 'ida', idaPct: 0, detail: 'Hardie 4x8 panels with battens on back porch ceiling; new Hardie wrapped columns; new porch decking; Hardie porch beams' },
+
+  // ── TILE & STONE ──
+  { name: 'Tile Scope - Labor & Prep', budget: 11750, cat: 'reno', idaPct: 0, detail: 'Tile work per plans; does not include kitchen backsplash. All flooring/tile purchased by owner (Inv #953)' },
+  { name: 'Countertop Fabrication & Install', budget: 8400, cat: 'reno', idaPct: 0, detail: 'Quartz with eased edge finish; final cost confirmed once stone selected (Inv #1055)' },
+  { name: 'Stone Budget', budget: 12000, cat: 'reno', idaPct: 0, detail: 'Stone selections by owner (Inv #970, #1055)' },
+
+  // ── TRIM ──
+  { name: 'Trim Package - Materials', budget: 18154, cat: 'ida', idaPct: 0, detail: 'Interior doors, base, shoe, crown, casings, wainscoting. Crown in foyer, den, hall, office, powder, dining, living, kitchen, master bed/bath. No crown upstairs. (Inv #953, #970)' },
+  { name: 'Trim Labor - Install', budget: 8500, cat: 'ida', idaPct: 0, detail: 'Install doors, shoe, base, crown, wainscoting; stair trim included in stair pricing (Inv #970, #984, #1055)' },
+
+  // ── FIREPLACE ──
+  { name: 'Fireplace Budget', budget: 5000, cat: 'reno', idaPct: 0, detail: '8\' wide x 2\' deep chimney area; recessed TV box for 88" TV; tile or stone surround, painted mantle, gas ventless (Inv #1045, #1055)' },
+
+  // ── STRUCTURAL ──
+  { name: 'Steel Beams & Labor', budget: 5000, cat: 'reno', idaPct: 0, detail: '3 steel beams for framing in area of new construction per plans (Inv #892, #932)' },
+  { name: 'Foundation - New Construction Slab on Grade', budget: 17875, cat: 'ida', idaPct: 0, detail: 'Rear addition foundation: continuous footings 24"x24", vapor barrier, #5 rebar w/ #3 stirrups @ 18" OC, 6x12 mesh, dowel/epoxy to existing (Inv #875)' },
+  { name: 'CO: Additional Footing Work', budget: 4740, cat: 'ida', idaPct: 0, detail: 'Additional footing work after site visit with engineer (CO #57, Inv #875)' },
+
+  // ── SANITATION & DUMPSTER ──
+  { name: 'Sanitation - Porta Potty', budget: 1800, cat: 'shared', idaPct: 0, detail: 'On-site porta potty for project duration; cleaned/serviced weekly. Billed across multiple invoices' },
+  { name: 'Dumpster Budget', budget: 8000, cat: 'shared', idaPct: 0, detail: 'Projected dumpster budget; invoiced per actual orders. Billed across Inv #848-1062' },
+
+  // ── STAIRCASE ──
+  { name: 'Interior Staircase - Treads & Rails', budget: 8200, cat: 'reno', idaPct: 0, detail: '48" red oak treads, rails, spindles TBD; skirt riser boards and exterior trim. Labor and materials except spindles (Inv #970, #984)' },
+  { name: 'CO: Staircase Overages', budget: 3138, cat: 'reno', idaPct: 0, detail: 'Cost increase after newel post & spindle selection (CO #185; Inv #984, #1055, #1057)' },
+
+  // ── FLOORING ──
+  { name: 'Eng Wood Flooring - Install Labor', budget: 6500, cat: 'shared', idaPct: 0, detail: 'Install, sand and finish owner-provided engineered wood; ~1,485 SF; glue-down install. All main listing area except master bed/bath, closet, pantry, powder, laundry (Inv #1013)' },
+  { name: 'Wood Floor Refinishing - Original Floors', budget: 6610, cat: 'shared', idaPct: 0, detail: 'Refinish original wood floors in master bedroom, master closet; upstairs bedrooms 1, 2, 3; rear corridor rooms. ~1,560 SF (Inv #1022, #1037)' },
+  { name: 'Wood Flooring (Owner Provided)', budget: 13500, cat: 'shared', idaPct: 0, detail: 'Owner-purchased engineered wood flooring and materials' },
+  { name: 'CO: Flooring Change Order', budget: 10597, cat: 'shared', idaPct: 0, detail: 'Flooring scope changes during construction (CO #189; Inv #999, #1013, #1037)' },
+  { name: 'Vinyl Plank Install - Apartment', budget: 1650, cat: 'reno', idaPct: 0, detail: 'Install LVP in apartment; ~900 SF; labor only, owner provides flooring and underlayment (Inv #1013)' },
+
+  // ── WINDOWS & DOORS ──
+  { name: 'Windows & Exterior Doors - Per Plans', budget: 18679.40, cat: 'shared', idaPct: 0, detail: 'Per plans from Luxury Windows and Doors; owner sign-off required. 50% at order, 50% at delivery (Inv #848, #886, #1057)' },
+  { name: 'CO: Custom Wood Windows (HDLC)', budget: 7355, cat: 'ida', idaPct: 0, detail: 'Build and install new custom wood windows per HDLC specifications for front of house (CO #62; Inv #866, #886, #892)' },
+  { name: 'Relocate 4 Windows', budget: 1600, cat: 'reno', idaPct: 0, detail: 'Relocate 4 existing windows to front of house; 2 on main level, 2 upper level at porches' },
+
+  // ── ROOFING & EXTERIOR ──
+  { name: 'Back Porch Roofing', budget: 4180, cat: 'ida', idaPct: 0, detail: 'Architectural shingles to match house roof (Inv #909)' },
+  { name: 'Gutters - Back Porch & Downspouts', budget: 1900, cat: 'ida', idaPct: 0, detail: 'K-style gutters across rear deck and round downspouts (Inv #984)' },
+  { name: 'CO: Cap Chimney', budget: 780, cat: 'ida', idaPct: 0, detail: 'Cap chimney to prevent water intrusion (CO #174; Inv #999)' },
+
+  // ── FENCING ──
+  { name: 'Front Fencing Budget', budget: 3500, cat: 'reno', idaPct: 0, detail: 'Left and right side fence from house to property line; 1 pedestrian gate each side' },
+
+  // ── MISCELLANEOUS ──
+  { name: 'Shower Glass - Master Bath', budget: 2800, cat: 'reno', idaPct: 0, detail: 'Glass door for master bath shower' },
+  { name: 'Consumables & Incidentals', budget: 1500, cat: 'shared', idaPct: 0, detail: 'Incremental cleaning, floor covering, tape, warehouse storage, unforeseen material. Invoiced per actual use' },
+
+  // ── CHANGE ORDERS (Renovation) ──
+  { name: 'CO: Insulation / Soundproofing', budget: 2710, cat: 'reno', idaPct: 0, detail: 'Sound proofing between floors (CO #114; Inv #932)' },
+  { name: 'CO: Crown Moulding & Wall Paneling', budget: 6167, cat: 'reno', idaPct: 0, detail: 'Material difference for crown moulding enhancer and wall paneling (CO #151; Inv #970)' },
+  { name: 'CO: Additional Paint Scope', budget: 10860, cat: 'reno', idaPct: 0, detail: 'Paint pantry cabinets $3,200; door/trim details $2,975; staircase treads/rails/spindles $2,875 (CO #243; Inv #1055, #1062)' },
+  { name: 'CO: Kitchen Hood', budget: 1980, cat: 'reno', idaPct: 0, detail: 'Build kitchen hood per customer specs (CO #225; Inv #1055)' },
+  { name: 'CO: Stone Material Difference', budget: 6320, cat: 'reno', idaPct: 0, detail: 'Cost difference between estimate budget and actual stone (CO #224; Inv #1055)' },
+  { name: 'CO: Ceiling Medallions & Mantle', budget: 1200, cat: 'reno', idaPct: 0, detail: '5 decorative ceiling medallions installed & painted; wood added to rear of original sitting room mantle (CO #237; Inv #1055)' },
+  { name: 'CO: Back Deck Framing Material', budget: 5465, cat: 'reno', idaPct: 0, detail: 'Additional framing material for back deck and exterior staircase (CO #267; Inv #1062)' },
+  { name: 'CO: Misc Small COs', budget: 2700, cat: 'reno', idaPct: 0, detail: 'Temp pole $1,440 (CO #81), reframe TV $360, grout pickup $370, tile material $1,767 less overlap — combined small renovation COs' },
+
+  // ── MANAGEMENT FEE ──
+  { name: 'Mgmt Fee, Profit & Overhead (20%)', budget: 96118.28, cat: 'shared', idaPct: 0, detail: 'Flat 20% fee on total contract value for project management, profit, insurance and overhead. Billed proportionally across all invoices' }
+];
+
+// Set all default idaPct to 0 (no presets), then load user-saved values
+(function() {
+  budgetItems.forEach(function(item) { item.idaPct = 0; });
+  var saved = JSON.parse(localStorage.getItem('ida_budget_pcts') || '{}');
+  var locks = JSON.parse(localStorage.getItem('ida_budget_locks') || '{}');
+  budgetItems.forEach(function(item) {
+    if (saved[item.name] !== undefined) item.idaPct = saved[item.name];
+    item.locked = !!locks[item.name];
+  });
+})();
+
+var rooms = [
+  // First Floor
+  { id: 'master_bed_1f', floor: 'first', name: 'Master Bedroom', w: '15\'-3"', h: '14\'-0"', wFt: 15.25, hFt: 14, idaDamage: true },
+  { id: 'living_front_1f', floor: 'first', name: 'Living Room (Front)', w: '12\'-0"', h: '20\'-5"', wFt: 12, hFt: 20.42, idaDamage: true },
+  { id: 'bath1_1f', floor: 'first', name: 'Bath 1', w: '8\'-9"', h: '9\'-6"', wFt: 8.75, hFt: 9.5, idaDamage: true },
+  { id: 'bedroom2_1f', floor: 'first', name: 'Bedroom 2', w: '14\'-6"', h: '14\'-0"', wFt: 14.5, hFt: 14, idaDamage: true },
+  { id: 'bedroom3_1f', floor: 'first', name: 'Bedroom 3', w: '10\'-3"', h: '15\'-0"', wFt: 10.25, hFt: 15, idaDamage: true },
+  { id: 'kitchen_1f', floor: 'first', name: 'Kitchen', w: '12\'-0"', h: '14\'-10"', wFt: 12, hFt: 14.83, idaDamage: true },
+  { id: 'living_back_1f', floor: 'first', name: 'Living Room (Back)', w: '14\'-0"', h: '14\'-0"', wFt: 14, hFt: 14, idaDamage: true },
+  { id: 'sunroom_1f', floor: 'first', name: 'Sun Room', w: '13\'-0"', h: '8\'-3"', wFt: 13, hFt: 8.25, idaDamage: true },
+  { id: 'bath2_1f', floor: 'first', name: 'Bath 2', w: '5\'-0"', h: '8\'-3"', wFt: 5, hFt: 8.25, idaDamage: true },
+  { id: 'hall_1f', floor: 'first', name: 'Hallway', w: '4\'-0"', h: '30\'-0"', wFt: 4, hFt: 30, idaDamage: true },
+  { id: 'stair_1f', floor: 'first', name: 'Stair (UP)', w: '8\'-0"', h: '10\'-0"', wFt: 8, hFt: 10, idaDamage: true },
+  // Second Floor
+  { id: 'master_bed_2f', floor: 'second', name: 'Master Bedroom', w: '15\'-3"', h: '14\'-0"', wFt: 15.25, hFt: 14, idaDamage: true },
+  { id: 'living_front_2f', floor: 'second', name: 'Living Room (Front)', w: '12\'-0"', h: '20\'-5"', wFt: 12, hFt: 20.42, idaDamage: true },
+  { id: 'bath1_2f', floor: 'second', name: 'Bath 1', w: '8\'-9"', h: '9\'-6"', wFt: 8.75, hFt: 9.5, idaDamage: true },
+  { id: 'bedroom2_2f', floor: 'second', name: 'Bedroom 2', w: '14\'-6"', h: '14\'-0"', wFt: 14.5, hFt: 14, idaDamage: true },
+  { id: 'bedroom3_2f', floor: 'second', name: 'Bedroom 3', w: '10\'-3"', h: '15\'-0"', wFt: 10.25, hFt: 15, idaDamage: true },
+  { id: 'kitchen_2f', floor: 'second', name: 'Kitchen', w: '12\'-0"', h: '14\'-10"', wFt: 12, hFt: 14.83, idaDamage: true },
+  { id: 'living_back_2f', floor: 'second', name: 'Living Room (Back)', w: '14\'-0"', h: '14\'-0"', wFt: 14, hFt: 14, idaDamage: true },
+  { id: 'sunroom_2f', floor: 'second', name: 'Sun Room', w: '13\'-0"', h: '8\'-3"', wFt: 13, hFt: 8.25, idaDamage: false },
+  { id: 'bath2_2f', floor: 'second', name: 'Bath 2', w: '5\'-0"', h: '8\'-3"', wFt: 5, hFt: 8.25, idaDamage: false },
+  { id: 'hall_2f', floor: 'second', name: 'Hallway', w: '4\'-0"', h: '30\'-0"', wFt: 4, hFt: 30, idaDamage: true },
+  { id: 'stair_2f', floor: 'second', name: 'Stair (DN)', w: '8\'-0"', h: '10\'-0"', wFt: 8, hFt: 10, idaDamage: true },
+  // Basement
+  { id: 'main_bsmt', floor: 'basement', name: 'Main Basement', w: '30\'-0"', h: '40\'-0"', wFt: 30, hFt: 40, idaDamage: true },
+  { id: 'utility_bsmt', floor: 'basement', name: 'Utility / Mech', w: '12\'-0"', h: '12\'-0"', wFt: 12, hFt: 12, idaDamage: false },
+  { id: 'stair_bsmt', floor: 'basement', name: 'Stair from Upstairs', w: '6\'-0"', h: '10\'-0"', wFt: 6, hFt: 10, idaDamage: false }
+];
+
+var photoPins = JSON.parse(localStorage.getItem('ida_photo_pins') || '[]');
+var svgMeasurements = JSON.parse(localStorage.getItem('ida_measurements') || '[]');
+var currentFloor = 'first';
+var pinsLocked = localStorage.getItem('ida_pins_locked') === 'true';
+var currentTool = 'select';
+var measureStart = null;
+
+// Layout coordinates match architectural plans. Scale ~7px/ft.
+// Oriented: North=top, South=bottom (matching the architect drawings).
+// Left column = west rooms, Right column = east rooms, hall between.
+var PX = 7; // pixels per foot
+var LX = 70; // left column x start
+var RX = 275; // right column x start
+var WS = 5; // wall spacing
+
+var layouts = {
+  first: [
+    // NORTH (top) — rear of house
+    { id: 'sunroom_1f',     x: LX,      y: 45,  w: 91,  h: 58 },   // 13x8.25
+    { id: 'bath2_1f',       x: LX+96,   y: 45,  w: 35,  h: 58 },   // 5x8.25
+    { id: 'kitchen_1f',     x: RX,       y: 45,  w: 90,  h: 108 },  // 12x14.83
+    // Middle-upper
+    { id: 'bedroom3_1f',    x: LX,      y: 108,  w: 82,  h: 108 },  // 10.25x15
+    // Middle
+    { id: 'bedroom2_1f',    x: LX,      y: 222,  w: 105, h: 100 },  // 14.5x14
+    { id: 'living_back_1f', x: RX,       y: 160,  w: 100, h: 100 },  // 14x14
+    { id: 'hall_1f',        x: LX+110,  y: 160,  w: 28,  h: 210 },  // hallway
+    // Middle-lower
+    { id: 'bath1_1f',       x: LX,      y: 328,  w: 62,  h: 68 },   // 8.75x9.5
+    { id: 'living_front_1f',x: RX,       y: 266,  w: 88,  h: 148 },  // 12x20.42
+    // SOUTH (bottom) — front of house
+    { id: 'master_bed_1f',  x: LX,      y: 420,  w: 110, h: 100 },  // 15.25x14
+    { id: 'stair_1f',       x: RX,       y: 420,  w: 58,  h: 72 }    // staircase UP
+    // Front porch would be below this
+  ],
+  second: [
+    // Same layout as first floor (mirror)
+    { id: 'sunroom_2f',     x: LX,      y: 45,  w: 91,  h: 58 },
+    { id: 'bath2_2f',       x: LX+96,   y: 45,  w: 35,  h: 58 },
+    { id: 'kitchen_2f',     x: RX,       y: 45,  w: 90,  h: 108 },
+    { id: 'bedroom3_2f',    x: LX,      y: 108,  w: 82,  h: 108 },
+    { id: 'bedroom2_2f',    x: LX,      y: 222,  w: 105, h: 100 },
+    { id: 'living_back_2f', x: RX,       y: 160,  w: 100, h: 100 },
+    { id: 'hall_2f',        x: LX+110,  y: 160,  w: 28,  h: 210 },
+    { id: 'bath1_2f',       x: LX,      y: 328,  w: 62,  h: 68 },
+    { id: 'living_front_2f',x: RX,       y: 266,  w: 88,  h: 148 },
+    { id: 'master_bed_2f',  x: LX,      y: 420,  w: 110, h: 100 },
+    { id: 'stair_2f',       x: RX,       y: 420,  w: 58,  h: 72 }
+  ],
+  basement: [
+    { id: 'main_bsmt',      x: LX,      y: 80,  w: 210, h: 280 },
+    { id: 'utility_bsmt',   x: RX+10,   y: 45,  w: 85,  h: 85 },
+    { id: 'stair_bsmt',     x: RX+100,  y: 45,  w: 45,  h: 72 }
+  ]
+};
+
+// Helpers
+function fmt(n) { return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function fmtK(n) { return n >= 1000 ? '$' + (n/1000).toFixed(0) + 'k' : fmt(n); }
+function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.textContent; }
+
+function getItemIda(item) {
+  if (item.cat === 'ida') return item.amount;
+  if (item.cat === 'reno') return 0;
+  return item.amount * (item.idaPct || 0) / 100;
+}
+
+// ==================== TAB SWITCHING ====================
+document.querySelector('.nav-tabs').addEventListener('click', function(e) {
+  var btn = e.target.closest('.nav-tab');
+  if (!btn) return;
+  var tab = btn.getAttribute('data-tab');
+  document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.nav-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.getElementById('tab-' + tab).classList.add('active');
+  btn.classList.add('active');
+  if (tab === 'floorplan') renderFloorPlan();
+  if (tab === 'breakdown') renderBreakdown();
+  if (tab === 'invoices') renderInvoices();
+  if (tab === 'measurements') renderMeasurementsTab();
+});
+
+// ==================== COMPUTED TOTALS ====================
+function getIdaRenoTotals() {
+  var totalBudget = 0, totalIda = 0, totalReno = 0;
+  budgetItems.filter(function(b) { return b.budget > 0; }).forEach(function(b) {
+    totalBudget += b.budget;
+    totalIda += b.budget * b.idaPct / 100;
+    totalReno += b.budget * (100 - b.idaPct) / 100;
+  });
+  return { budget: totalBudget, ida: totalIda, reno: totalReno };
+}
+
+// Fixed Ida costs (same items as the expenditures table)
+var evacCosts = 1073.82 + 273.52 + 339.04 + 4303.72; // evacuation
+var inspectionCost = 2500.00;
+var fixedRepairCosts = 5000.00 + 3990.04 + 6642.00; // permit drawings, permits, builders risk
+
+function getIdaGrandTotal() {
+  var t = getIdaRenoTotals();
+  return evacCosts + inspectionCost + fixedRepairCosts + t.ida;
+}
+
+function updateOverviewCards() {
+  var t = getIdaRenoTotals();
+  var grandTotal = getIdaGrandTotal();
+  var idaPct = (t.ida / t.budget * 100).toFixed(1);
+  var renoPct = (t.reno / t.budget * 100).toFixed(1);
+
+  var cards = document.getElementById('overviewCards');
+  cards.textContent = '';
+  var data = [
+    { label: 'Total Claimed (Ida)', value: fmtK(grandTotal), detail: 'Repairs + Evacuation + Inspection', cls: 'total' },
+    { label: 'Ida Repair Costs', value: fmtK(t.ida), detail: 'From Ida vs Renovation breakdown', cls: 'ida' },
+    { label: 'Full Contract (Trainque)', value: fmtK(t.budget), detail: 'Ida + Renovation combined', cls: 'reno' },
+    { label: 'Renovation Portion', value: fmtK(t.reno), detail: renoPct + '% of contract', cls: 'reno' }
+  ];
+  data.forEach(function(d) {
+    var card = document.createElement('div');
+    card.className = 'summary-card ' + d.cls;
+    if (!d.cls) card.style.borderLeftColor = '#e6a817';
+    var lbl = document.createElement('div'); lbl.className = 'label'; lbl.textContent = d.label;
+    var val = document.createElement('div'); val.className = 'value'; val.textContent = d.value;
+    var det = document.createElement('div'); det.className = 'detail'; det.textContent = d.detail;
+    card.appendChild(lbl); card.appendChild(val); card.appendChild(det);
+    cards.appendChild(card);
+  });
+
+  // Stacked bar
+  var bar = document.getElementById('overviewStackedBar');
+  bar.textContent = '';
+  var seg1 = document.createElement('div');
+  seg1.className = 'stacked-segment';
+  seg1.style.cssText = 'width:' + idaPct + '%;background:var(--ida-color)';
+  seg1.textContent = 'Ida ' + idaPct + '%';
+  var seg2 = document.createElement('div');
+  seg2.className = 'stacked-segment';
+  seg2.style.cssText = 'width:' + renoPct + '%;background:var(--reno-color)';
+  seg2.textContent = 'Reno ' + renoPct + '%';
+  bar.appendChild(seg1);
+  bar.appendChild(seg2);
+}
+
+// ==================== OVERVIEW ====================
+function renderOverview() {
+  updateOverviewCards();
+  renderIdaExpBars();
+  renderCategoryBars();
+  renderIdaExpTable();
+}
+
+function renderIdaExpBars() {
+  var items = [
+    { label: 'Drywall', amt: 32000 }, { label: 'Interior Paint', amt: 30000 },
+    { label: 'Demo', amt: 29500.70 }, { label: 'Trim & Doors', amt: 26654 },
+    { label: 'Wood Floors', amt: 18678.60 }, { label: 'Rear Foundation', amt: 17875 },
+    { label: 'Fence', amt: 13388.50 }, { label: 'Dumpster', amt: 9800 },
+    { label: 'Lighting', amt: 8500 }, { label: 'Builders Risk', amt: 6642 },
+    { label: 'Insulation', amt: 6000 }, { label: 'Permits+Drawings', amt: 8990.04 },
+    { label: 'Windows', amt: 3200 }, { label: 'Cleanup', amt: 3000 },
+    { label: 'Gutters', amt: 1900 }
+  ];
+  var maxAmt = Math.max.apply(null, items.map(function(i) { return i.amt; }));
+  var container = document.getElementById('idaExpBars');
+  container.textContent = '';
+  items.forEach(function(item) {
+    var pct = (item.amt / maxAmt * 100).toFixed(0);
+    var row = document.createElement('div'); row.className = 'bar-row';
+    var lbl = document.createElement('div'); lbl.className = 'bar-label'; lbl.textContent = item.label;
+    var track = document.createElement('div'); track.className = 'bar-track';
+    var fill = document.createElement('div'); fill.className = 'bar-fill ida-bar'; fill.style.width = pct + '%';
+    var sp = document.createElement('span'); sp.textContent = fmtK(item.amt);
+    fill.appendChild(sp); track.appendChild(fill);
+    row.appendChild(lbl); row.appendChild(track);
+    container.appendChild(row);
+  });
+}
+
+function renderCategoryBars() {
+  var cats = [
+    { label: 'Demo', ida: 29500.70, reno: 0 },
+    { label: 'Framing', ida: 26676, reno: 40014 },
+    { label: 'Drywall', ida: 32000, reno: 0 },
+    { label: 'Paint', ida: 30000, reno: 26000 },
+    { label: 'Electrical', ida: 0, reno: 33000 },
+    { label: 'Plumbing', ida: 0, reno: 34250 },
+    { label: 'HVAC', ida: 0, reno: 29986 },
+    { label: 'Foundation', ida: 17875, reno: 0 },
+    { label: 'Siding', ida: 36567, reno: 0 },
+    { label: 'Flooring', ida: 9589, reno: 9589 }
+  ];
+  var catMax = Math.max.apply(null, cats.map(function(c) { return c.ida + c.reno; }));
+  var container = document.getElementById('categoryBars');
+  container.textContent = '';
+  cats.forEach(function(cat) {
+    var row = document.createElement('div'); row.className = 'bar-row';
+    var lbl = document.createElement('div'); lbl.className = 'bar-label'; lbl.textContent = cat.label;
+    var track = document.createElement('div'); track.className = 'bar-track';
+    var inner = document.createElement('div'); inner.style.cssText = 'display:flex;height:100%';
+    if (cat.ida > 0) {
+      var f1 = document.createElement('div'); f1.className = 'bar-fill ida-bar';
+      f1.style.width = (cat.ida / catMax * 100).toFixed(0) + '%';
+      var s1 = document.createElement('span'); s1.textContent = fmtK(cat.ida); f1.appendChild(s1);
+      inner.appendChild(f1);
+    }
+    if (cat.reno > 0) {
+      var f2 = document.createElement('div'); f2.className = 'bar-fill reno-bar';
+      f2.style.width = (cat.reno / catMax * 100).toFixed(0) + '%';
+      var s2 = document.createElement('span'); s2.textContent = fmtK(cat.reno); f2.appendChild(s2);
+      inner.appendChild(f2);
+    }
+    track.appendChild(inner); row.appendChild(lbl); row.appendChild(track);
+    container.appendChild(row);
+  });
+}
+
+function renderIdaExpTable() {
+  var tbl = document.createElement('table');
+  var thead = document.createElement('thead');
+  var thr = document.createElement('tr');
+  ['Category', 'Item', 'Amount'].forEach(function(h) {
+    var th = document.createElement('th'); th.textContent = h;
+    if (h === 'Amount') th.style.textAlign = 'right';
+    thr.appendChild(th);
+  });
+  thead.appendChild(thr); tbl.appendChild(thead);
+  var tbody = document.createElement('tbody');
+
+  // Helper to add a row
+  function addRow(cat, item, amount, isSub, isTotal) {
+    var tr = document.createElement('tr');
+    if (isSub) tr.style.background = '#fef7f6';
+    if (isTotal) tr.className = 'totals-row';
+    var td1 = document.createElement('td');
+    if (isSub || isTotal) {
+      td1.setAttribute('colspan', '2'); td1.style.fontWeight = '600'; td1.textContent = item;
+    } else {
+      td1.textContent = cat;
+    }
+    tr.appendChild(td1);
+    if (!isSub && !isTotal) {
+      var td2 = document.createElement('td'); td2.textContent = item; tr.appendChild(td2);
+    }
+    var td3 = document.createElement('td'); td3.className = 'amount'; td3.style.textAlign = 'right';
+    td3.textContent = fmt(amount);
+    if (isSub) td3.className = 'amount ida-amt';
+    tr.appendChild(td3);
+    tbody.appendChild(tr);
+    return amount;
+  }
+
+  var grandTotal = 0;
+
+  // ── Evacuation (fixed amounts) ──
+  var evacTotal = 0;
+  evacTotal += addRow('Evacuation', 'Groceries & Supplies', 1073.82);
+  evacTotal += addRow('', 'Mileage (526 mi)', 273.52);
+  evacTotal += addRow('', 'Mileage (652 mi)', 339.04);
+  evacTotal += addRow('', 'Hotel', 4303.72);
+  addRow('', 'Evacuation Subtotal', evacTotal, true);
+  grandTotal += evacTotal;
+
+  // ── Inspection (fixed) ──
+  grandTotal += addRow('Inspection', 'Gurtler Bros', 2500.00);
+
+  // ── Fixed repair costs ──
+  var repairsTotal = 0;
+  repairsTotal += addRow('Repairs', 'Permit Drawings', 5000.00);
+  repairsTotal += addRow('', 'Permits', 3990.04);
+  repairsTotal += addRow('', 'Builders Risk Insurance', 6642.00);
+
+  // ── Dynamic repair items from budget (Ida portion only, from sliders) ──
+  budgetItems.filter(function(bi) { return bi.budget > 0; }).forEach(function(item) {
+    var idaAmt = item.budget * item.idaPct / 100;
+    if (idaAmt > 0) {
+      repairsTotal += addRow('', item.name + (item.idaPct < 100 ? ' (' + item.idaPct + '% Ida)' : ''), idaAmt);
+    }
+  });
+
+  addRow('', 'Repairs Subtotal', repairsTotal, true);
+  grandTotal += repairsTotal;
+
+  // ── Grand Total ──
+  addRow('', 'GRAND TOTAL', grandTotal, false, true);
+
+  tbl.appendChild(tbody);
+  document.getElementById('idaExpTable').textContent = '';
+  document.getElementById('idaExpTable').appendChild(tbl);
+}
+
+// ==================== INVOICES ====================
+// Store cancelled check file references in localStorage
+var cancelledChecks = JSON.parse(localStorage.getItem('ida_cancelled_checks') || '{}');
+
+function saveCancelledChecks() {
+  try {
+    localStorage.setItem('ida_cancelled_checks', JSON.stringify(cancelledChecks));
+  } catch(e) {
+    alert('Storage full. Try clearing some photo library data or use smaller images. Error: ' + e.message);
+  }
+}
+
+function handleCheckUpload(invNum, fileInput) {
+  var files = fileInput.files;
+  if (!files || !files.length) return;
+  if (!cancelledChecks[invNum]) cancelledChecks[invNum] = [];
+
+  var file = files[0];
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    // Compress image heavily to save localStorage space
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var maxW = 600, maxH = 400;
+      var w = img.width, h = img.height;
+      if (w > maxW) { h = h * maxW / w; w = maxW; }
+      if (h > maxH) { w = w * maxH / h; h = maxH; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      var compressed = canvas.toDataURL('image/jpeg', 0.5);
+      cancelledChecks[invNum].push({
+        name: file.name,
+        data: compressed,
+        date: new Date().toISOString()
+      });
+      saveCancelledChecks();
+      renderInvoices();
+    };
+    img.onerror = function() {
+      // Not an image (PDF) - store just the filename, not the data
+      cancelledChecks[invNum].push({
+        name: file.name,
+        data: '',
+        date: new Date().toISOString()
+      });
+      saveCancelledChecks();
+      renderInvoices();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function viewCheck(invNum, idx) {
+  var check = cancelledChecks[invNum][idx];
+  if (!check) return;
+  if (check.data.indexOf('image') >= 0) {
+    showPhotoPopup(check.data, 'Invoice #' + invNum + ' - ' + check.name);
+  } else {
+    // PDF - open in new tab
+    var w = window.open('', '_blank');
+    var doc = w.document;
+    doc.open();
+    var embed = doc.createElement('embed');
+    embed.src = check.data;
+    embed.width = '100%';
+    embed.height = '100%';
+    embed.type = 'application/pdf';
+    doc.body.style.margin = '0';
+    doc.body.appendChild(embed);
+    doc.title = 'Check - Inv #' + invNum;
+    doc.close();
+  }
+}
+
+function removeCheck(invNum, idx) {
+  if (cancelledChecks[invNum]) {
+    cancelledChecks[invNum].splice(idx, 1);
+    if (cancelledChecks[invNum].length === 0) delete cancelledChecks[invNum];
+    saveCancelledChecks();
+    renderInvoices();
+  }
+}
+
+function renderInvoices() {
+  var wrap = document.getElementById('invoiceTableWrap');
+  var totalAll = 0;
+
+  var tbl = document.createElement('table');
+  var thead = document.createElement('thead');
+  var thr = document.createElement('tr');
+  ['Inv #', 'Date', 'Line Item', 'Amount', 'Invoice Total'].forEach(function(h, i) {
+    var th = document.createElement('th'); th.textContent = h;
+    if (i >= 3) th.style.textAlign = 'right';
+    thr.appendChild(th);
+  });
+  thead.appendChild(thr); tbl.appendChild(thead);
+  var tbody = document.createElement('tbody');
+
+  invoices.forEach(function(inv) {
+    inv.items.forEach(function(item, i) {
+      totalAll += item.amount;
+
+      var tr = document.createElement('tr');
+      if (i === 0) {
+        var tdN = document.createElement('td'); tdN.textContent = inv.num; tdN.setAttribute('rowspan', inv.items.length);
+        tdN.style.fontWeight = '600';
+        var tdD = document.createElement('td'); tdD.textContent = inv.date; tdD.setAttribute('rowspan', inv.items.length);
+        tr.appendChild(tdN); tr.appendChild(tdD);
+      }
+      var tdDesc = document.createElement('td'); tdDesc.textContent = item.desc;
+      var tdAmt = document.createElement('td'); tdAmt.className = 'amount'; tdAmt.style.textAlign = 'right'; tdAmt.textContent = fmt(item.amount);
+      tr.appendChild(tdDesc); tr.appendChild(tdAmt);
+
+      // Invoice total column (only on first row per invoice)
+      if (i === 0) {
+        var tdTotal = document.createElement('td');
+        tdTotal.setAttribute('rowspan', inv.items.length);
+        tdTotal.className = 'amount';
+        tdTotal.style.cssText = 'text-align:right;vertical-align:middle;font-weight:700;font-size:0.9rem;';
+        tdTotal.textContent = fmt(inv.total);
+        tr.appendChild(tdTotal);
+      }
+
+      tbody.appendChild(tr);
+    });
+  });
+
+  var totR = document.createElement('tr'); totR.className = 'totals-row';
+  var t1 = document.createElement('td'); t1.setAttribute('colspan', '3'); t1.textContent = 'TOTALS';
+  var t2 = document.createElement('td'); t2.className = 'amount'; t2.style.textAlign = 'right'; t2.textContent = fmt(totalAll);
+  var t3 = document.createElement('td'); t3.className = 'amount'; t3.style.textAlign = 'right'; t3.style.fontWeight = '700'; t3.textContent = fmt(totalAll);
+  totR.appendChild(t1); totR.appendChild(t2); totR.appendChild(t3);
+  tbody.appendChild(totR);
+  tbl.appendChild(tbody);
+  wrap.textContent = '';
+  wrap.appendChild(tbl);
+
+  // Summary cards
+  var sc = document.getElementById('invoiceSummaryCards');
+  sc.textContent = '';
+  [{ l: 'Total Invoiced', v: fmtK(totalAll), c: 'total' },
+   { l: 'Total Invoices', v: String(invoices.length), c: '' },
+  ].forEach(function(d) {
+    var card = document.createElement('div'); card.className = 'summary-card ' + d.c;
+    var lbl = document.createElement('div'); lbl.className = 'label'; lbl.textContent = d.l;
+    var val = document.createElement('div'); val.className = 'value'; val.textContent = d.v;
+    card.appendChild(lbl); card.appendChild(val); sc.appendChild(card);
+  });
+
+  // Change orders
+  var coWrap = document.getElementById('coTableWrap');
+  var coTbl = document.createElement('table');
+  var coThead = document.createElement('thead');
+  var coThr = document.createElement('tr');
+  ['CO #', 'Date', 'Description', 'Amount', 'Category'].forEach(function(h, i) {
+    var th = document.createElement('th'); th.textContent = h;
+    if (i === 3) th.style.textAlign = 'right';
+    coThr.appendChild(th);
+  });
+  coThead.appendChild(coThr); coTbl.appendChild(coThead);
+  var coTbody = document.createElement('tbody');
+  changeOrders.forEach(function(co) {
+    var tr = document.createElement('tr');
+    var td1 = document.createElement('td'); td1.textContent = co.num;
+    var td2 = document.createElement('td'); td2.textContent = co.date;
+    var td3 = document.createElement('td'); td3.textContent = co.desc;
+    var td4 = document.createElement('td'); td4.className = 'amount'; td4.style.textAlign = 'right'; td4.textContent = fmt(co.amount);
+    var td5 = document.createElement('td');
+    var b = document.createElement('span');
+    b.className = 'badge badge-' + (co.cat === 'ida' ? 'ida' : co.cat === 'reno' ? 'reno' : 'shared');
+    b.textContent = co.cat === 'ida' ? 'Ida' : co.cat === 'reno' ? 'Reno' : 'Shared';
+    td5.appendChild(b);
+    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3); tr.appendChild(td4); tr.appendChild(td5);
+    coTbody.appendChild(tr);
+  });
+  coTbl.appendChild(coTbody);
+  coWrap.textContent = '';
+  coWrap.appendChild(coTbl);
+
+  // SELA Invoices table
+  var selaWrap = document.getElementById('selaTableWrap');
+  var selaTbl = document.createElement('table');
+  var selaThead = document.createElement('thead');
+  var selaThr = document.createElement('tr');
+  ['Inv #', 'Date', 'Line Item', 'Amount', 'Inv Total'].forEach(function(h, i) {
+    var th = document.createElement('th'); th.textContent = h;
+    if (i >= 3) th.style.textAlign = 'right';
+    selaThr.appendChild(th);
+  });
+  selaThead.appendChild(selaThr); selaTbl.appendChild(selaThead);
+  var selaTbody = document.createElement('tbody');
+  var selaGrandTotal = 0;
+  selaInvoices.forEach(function(inv) {
+    selaGrandTotal += inv.total;
+    inv.items.forEach(function(item, i) {
+      var tr = document.createElement('tr');
+      if (i === 0) {
+        var tdN = document.createElement('td'); tdN.textContent = inv.num; tdN.setAttribute('rowspan', inv.items.length);
+        var tdD = document.createElement('td'); tdD.textContent = inv.date; tdD.setAttribute('rowspan', inv.items.length);
+        tr.appendChild(tdN); tr.appendChild(tdD);
+      }
+      var tdDesc = document.createElement('td'); tdDesc.textContent = item.desc;
+      var tdAmt = document.createElement('td'); tdAmt.className = 'amount'; tdAmt.style.textAlign = 'right'; tdAmt.textContent = fmt(item.amount);
+      tr.appendChild(tdDesc); tr.appendChild(tdAmt);
+      if (i === 0) {
+        var tdTot = document.createElement('td'); tdTot.className = 'amount'; tdTot.style.textAlign = 'right';
+        tdTot.textContent = fmt(inv.total); tdTot.setAttribute('rowspan', inv.items.length);
+        tr.appendChild(tdTot);
+      }
+      selaTbody.appendChild(tr);
+    });
+  });
+  var selaTotRow = document.createElement('tr'); selaTotRow.className = 'totals-row';
+  var st1 = document.createElement('td'); st1.setAttribute('colspan', '3'); st1.textContent = 'TOTAL (' + selaInvoices.length + ' invoices)';
+  var st2 = document.createElement('td');
+  var st3 = document.createElement('td'); st3.className = 'amount'; st3.style.textAlign = 'right'; st3.textContent = fmt(selaGrandTotal);
+  selaTotRow.appendChild(st1); selaTotRow.appendChild(st2); selaTotRow.appendChild(st3);
+  selaTbody.appendChild(selaTotRow);
+  selaTbl.appendChild(selaTbody);
+  selaWrap.textContent = '';
+  selaWrap.appendChild(selaTbl);
+}
+
+// ==================== BREAKDOWN ====================
+function renderBreakdown() {
+  var wrap = document.getElementById('breakdownTableWrap');
+  var tbl = document.createElement('table');
+  var thead = document.createElement('thead');
+  var thr = document.createElement('tr');
+  // Load saved notes from localStorage
+  var savedNotes = JSON.parse(localStorage.getItem('ida_budget_notes') || '{}');
+
+  ['Budget Item', 'Details', 'Contract Amt', 'Ida %', 'Ida Amount', 'Reno Amount', 'Visual', 'Notes'].forEach(function(h, i) {
+    var th = document.createElement('th'); th.textContent = h;
+    if (i === 2 || i === 4 || i === 5) th.style.textAlign = 'right';
+    if (i === 1) th.style.minWidth = '180px';
+    if (i === 7) th.style.minWidth = '150px';
+    thr.appendChild(th);
+  });
+  thead.appendChild(thr); tbl.appendChild(thead);
+  var tbody = document.createElement('tbody');
+  var filtered = budgetItems.filter(function(b) { return b.budget > 0; });
+  var totalBudget = 0, totalIda = 0, totalReno = 0;
+
+  filtered.forEach(function(item, idx) {
+    var idaAmt = item.budget * item.idaPct / 100;
+    var renoAmt = item.budget - idaAmt;
+    totalBudget += item.budget; totalIda += idaAmt; totalReno += renoAmt;
+
+    var tr = document.createElement('tr');
+    var td1 = document.createElement('td'); td1.textContent = item.name; td1.style.fontWeight = '600'; td1.style.fontSize = '0.82rem';
+
+    var tdDetail = document.createElement('td');
+    tdDetail.style.cssText = 'font-size:0.75rem;color:#6b7680;max-width:220px;line-height:1.3';
+    tdDetail.textContent = item.detail || '';
+
+    var td2 = document.createElement('td'); td2.className = 'amount'; td2.style.textAlign = 'right'; td2.textContent = fmt(item.budget);
+
+    var td4 = document.createElement('td');
+    var sliderRow = document.createElement('div'); sliderRow.className = 'split-slider-row';
+    var slider = document.createElement('input'); slider.type = 'range'; slider.className = 'split-slider';
+    slider.min = '0'; slider.max = '100'; slider.value = String(item.idaPct);
+    slider.setAttribute('data-idx', String(idx));
+    var pctSpan = document.createElement('span'); pctSpan.className = 'split-pct'; pctSpan.id = 'splitPct' + idx;
+    pctSpan.textContent = item.idaPct + '%';
+    // Lock button
+    var lockBtn = document.createElement('button');
+    lockBtn.style.cssText = 'border:none;background:none;cursor:pointer;font-size:1rem;padding:0 4px;';
+    lockBtn.textContent = item.locked ? '\uD83D\uDD12' : '\uD83D\uDD13'; // locked/unlocked emoji
+    lockBtn.title = item.locked ? 'Locked - click to unlock' : 'Unlocked - click to lock';
+    lockBtn.setAttribute('data-name', item.name);
+    lockBtn.setAttribute('data-idx', String(idx));
+    if (item.locked) { slider.disabled = true; slider.style.opacity = '0.4'; }
+    lockBtn.addEventListener('click', function() {
+      var itemName = this.getAttribute('data-name');
+      var sliderIdx = this.getAttribute('data-idx');
+      var bi = budgetItems.find(function(b) { return b.name === itemName; });
+      bi.locked = !bi.locked;
+      // Save lock state
+      var locks = JSON.parse(localStorage.getItem('ida_budget_locks') || '{}');
+      if (bi.locked) { locks[itemName] = true; } else { delete locks[itemName]; }
+      localStorage.setItem('ida_budget_locks', JSON.stringify(locks));
+      // Update UI
+      this.textContent = bi.locked ? '\uD83D\uDD12' : '\uD83D\uDD13';
+      this.title = bi.locked ? 'Locked - click to unlock' : 'Unlocked - click to lock';
+      var sl = this.parentElement.querySelector('.split-slider');
+      if (sl) { sl.disabled = bi.locked; sl.style.opacity = bi.locked ? '0.4' : '1'; }
+    });
+    sliderRow.appendChild(slider); sliderRow.appendChild(pctSpan); sliderRow.appendChild(lockBtn); td4.appendChild(sliderRow);
+
+    var td5 = document.createElement('td'); td5.className = 'amount ida-amt'; td5.style.textAlign = 'right';
+    td5.id = 'idaAmt' + idx; td5.textContent = fmt(idaAmt);
+    var td6 = document.createElement('td'); td6.className = 'amount reno-amt'; td6.style.textAlign = 'right';
+    td6.id = 'renoAmt' + idx; td6.textContent = fmt(renoAmt);
+    var td7 = document.createElement('td'); td7.style.width = '100px';
+    var barWrap = document.createElement('div'); barWrap.style.cssText = 'height:14px;display:flex;border-radius:3px;overflow:hidden';
+    var idaBar = document.createElement('div'); idaBar.id = 'idaBar' + idx;
+    idaBar.style.cssText = 'width:' + item.idaPct + '%;background:var(--ida-color)';
+    var renoBar = document.createElement('div'); renoBar.id = 'renoBar' + idx;
+    renoBar.style.cssText = 'width:' + (100 - item.idaPct) + '%;background:var(--reno-color)';
+    barWrap.appendChild(idaBar); barWrap.appendChild(renoBar); td7.appendChild(barWrap);
+
+    // Notes column
+    var tdNotes = document.createElement('td');
+    var noteInput = document.createElement('textarea');
+    noteInput.style.cssText = 'width:100%;min-width:130px;height:36px;border:1px solid #ddd;border-radius:4px;padding:4px 6px;font-size:0.72rem;resize:vertical;font-family:inherit;color:#444;';
+    noteInput.placeholder = 'Explain % allocation...';
+    noteInput.value = savedNotes[item.name] || '';
+    noteInput.setAttribute('data-item', item.name);
+    noteInput.addEventListener('change', function() {
+      var notes = JSON.parse(localStorage.getItem('ida_budget_notes') || '{}');
+      notes[this.getAttribute('data-item')] = this.value;
+      localStorage.setItem('ida_budget_notes', JSON.stringify(notes));
+    });
+    tdNotes.appendChild(noteInput);
+
+    tr.appendChild(td1); tr.appendChild(tdDetail); tr.appendChild(td2); tr.appendChild(td4);
+    tr.appendChild(td5); tr.appendChild(td6); tr.appendChild(td7); tr.appendChild(tdNotes);
+    tbody.appendChild(tr);
+  });
+
+  // Footer
+  var tfoot = document.createElement('tfoot');
+  var ftr = document.createElement('tr'); ftr.className = 'totals-row';
+  var ft1 = document.createElement('td'); ft1.textContent = 'TOTALS'; ft1.setAttribute('colspan', '2');
+  var ft2 = document.createElement('td'); ft2.className = 'amount'; ft2.style.textAlign = 'right'; ft2.id = 'bdTotalBudget'; ft2.textContent = fmt(totalBudget);
+  var ft3 = document.createElement('td');
+  var ft5 = document.createElement('td'); ft5.className = 'amount ida-amt'; ft5.style.textAlign = 'right'; ft5.id = 'bdTotalIda'; ft5.textContent = fmt(totalIda);
+  var ft6 = document.createElement('td'); ft6.className = 'amount reno-amt'; ft6.style.textAlign = 'right'; ft6.id = 'bdTotalReno'; ft6.textContent = fmt(totalReno);
+  var ft7 = document.createElement('td');
+  var ft8 = document.createElement('td');
+  ftr.appendChild(ft1); ftr.appendChild(ft2); ftr.appendChild(ft3);
+  ftr.appendChild(ft5); ftr.appendChild(ft6); ftr.appendChild(ft7); ftr.appendChild(ft8);
+  tfoot.appendChild(ftr);
+
+  tbl.appendChild(tbody); tbl.appendChild(tfoot);
+  wrap.textContent = '';
+  wrap.appendChild(tbl);
+
+  updateBreakdownSummary(totalBudget, totalIda, totalReno);
+
+  // Slider event delegation
+  wrap.addEventListener('input', function(e) {
+    if (e.target.className === 'split-slider') {
+      var idx = parseInt(e.target.getAttribute('data-idx'));
+      var item = filtered[idx];
+      var realItem = budgetItems.find(function(b) { return b.name === item.name; });
+      // If locked, revert slider
+      if (realItem.locked) { e.target.value = realItem.idaPct; return; }
+      var val = parseInt(e.target.value);
+      realItem.idaPct = val;
+      // Save to localStorage
+      var saved = JSON.parse(localStorage.getItem('ida_budget_pcts') || '{}');
+      saved[item.name] = val;
+      localStorage.setItem('ida_budget_pcts', JSON.stringify(saved));
+      var idaAmt = item.budget * val / 100;
+      var renoAmt = item.budget - idaAmt;
+      document.getElementById('splitPct' + idx).textContent = val + '%';
+      document.getElementById('idaAmt' + idx).textContent = fmt(idaAmt);
+      document.getElementById('renoAmt' + idx).textContent = fmt(renoAmt);
+      document.getElementById('idaBar' + idx).style.width = val + '%';
+      document.getElementById('renoBar' + idx).style.width = (100 - val) + '%';
+
+      var tB = 0, tI = 0, tR = 0;
+      budgetItems.filter(function(b) { return b.budget > 0; }).forEach(function(b) {
+        tB += b.budget; tI += b.budget * b.idaPct / 100; tR += b.budget * (100 - b.idaPct) / 100;
+      });
+      document.getElementById('bdTotalBudget').textContent = fmt(tB);
+      document.getElementById('bdTotalIda').textContent = fmt(tI);
+      document.getElementById('bdTotalReno').textContent = fmt(tR);
+      updateBreakdownSummary(tB, tI, tR);
+      updateOverviewCards();
+      renderIdaExpTable();
+    }
+  });
+}
+
+function updateBreakdownSummary(total, ida, reno) {
+  var pctIda = (ida / total * 100).toFixed(1);
+  var pctReno = (reno / total * 100).toFixed(1);
+  var sc = document.getElementById('breakdownSummary');
+  sc.textContent = '';
+  [{ l: 'Total Contract Budget', v: fmtK(total), c: 'total', d: '' },
+   { l: 'Hurricane Ida Portion', v: fmtK(ida), c: 'ida', d: pctIda + '% of contract' },
+   { l: 'Renovation Portion', v: fmtK(reno), c: 'reno', d: pctReno + '% of contract' }
+  ].forEach(function(x) {
+    var card = document.createElement('div'); card.className = 'summary-card ' + x.c;
+    var lbl = document.createElement('div'); lbl.className = 'label'; lbl.textContent = x.l;
+    var val = document.createElement('div'); val.className = 'value'; val.textContent = x.v;
+    card.appendChild(lbl); card.appendChild(val);
+    if (x.d) { var det = document.createElement('div'); det.className = 'detail'; det.textContent = x.d; card.appendChild(det); }
+    sc.appendChild(card);
+  });
+}
+
+// ==================== FLOOR PLAN ====================
+// Floor plan image paths (cropped PNGs from architect PDFs)
+var floorplanImages = {
+  first: 'floorplan-first-crop.png',
+  second: 'floorplan-second-crop.png',
+  basement: 'floorplan-basement-crop.png'
+};
+
+function renderFloorPlan() {
+  var svg = document.getElementById('floorplanSVG');
+  var img = document.getElementById('floorplanImg');
+  var NS = 'http://www.w3.org/2000/svg';
+
+  // Set floor plan image
+  img.src = floorplanImages[currentFloor] || floorplanImages.first;
+
+  // Clear SVG overlay
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+  // Make SVG interactive
+  svg.style.pointerEvents = 'all';
+
+  // Drag state (module-level so document handlers can access)
+  var activeDragPin = null;
+  var activeDragMoved = false;
+  var canvasWrapEl = document.getElementById('canvasWrap');
+
+  // Render photo pins
+  var floorPinsList = photoPins.filter(function(p) { return p.floor === currentFloor; });
+  floorPinsList.forEach(function(pin, i) {
+    var cx = (pin.pctX || 50) + '%';
+    var cy = (pin.pctY || 50) + '%';
+    var hasPhoto = pin.photoId && photoLibrary.find(function(p){return p.id===pin.photoId;});
+
+    var g = document.createElementNS(NS, 'g');
+    g.style.cursor = pinsLocked ? 'pointer' : 'grab';
+    g.style.pointerEvents = 'all';
+
+    // Large invisible hit area (easier to grab)
+    var hitArea = document.createElementNS(NS, 'circle');
+    hitArea.setAttribute('cx', cx); hitArea.setAttribute('cy', cy); hitArea.setAttribute('r', '18');
+    hitArea.setAttribute('fill', 'transparent');
+    hitArea.style.cursor = 'grab';
+    g.appendChild(hitArea);
+
+    // Drop shadow
+    var shadow = document.createElementNS(NS, 'circle');
+    shadow.setAttribute('cx', cx); shadow.setAttribute('cy', cy); shadow.setAttribute('r', hasPhoto ? '12' : '10');
+    shadow.setAttribute('fill', 'rgba(0,0,0,0.2)');
+    g.appendChild(shadow);
+
+    // Main pin circle
+    var circ = document.createElementNS(NS, 'circle');
+    circ.setAttribute('cx', cx); circ.setAttribute('cy', cy); circ.setAttribute('r', hasPhoto ? '10' : '8');
+    circ.setAttribute('fill', hasPhoto ? '#3d5a6c' : '#ff6f61');
+    circ.setAttribute('stroke', 'white'); circ.setAttribute('stroke-width', '2');
+    g.appendChild(circ);
+
+    // Pin number
+    var numText = document.createElementNS(NS, 'text');
+    numText.setAttribute('x', cx); numText.setAttribute('y', cy);
+    numText.setAttribute('text-anchor', 'middle'); numText.setAttribute('dominant-baseline', 'central');
+    numText.setAttribute('font-size', '9'); numText.setAttribute('fill', 'white'); numText.setAttribute('font-weight', '700');
+    numText.textContent = String(i + 1);
+    g.appendChild(numText);
+
+    // Store refs
+    g._pinIndex = i;
+    g._pin = pin;
+    g._els = [hitArea, shadow, circ, numText];
+
+    // Mouse/touch down = start drag
+    g.addEventListener('mousedown', function(e) {
+      if (currentTool !== 'select') return;
+      if (pinsLocked) {
+        // Locked - just show info, no drag
+        e.preventDefault();
+        e.stopPropagation();
+        showPinInfo(g._pinIndex);
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      activeDragPin = g;
+      activeDragMoved = false;
+      g.style.cursor = 'grabbing';
+      document.body.style.cursor = 'grabbing';
+      svg.appendChild(g);
+    });
+
+    svg.appendChild(g);
+  });
+
+  // Document-level mousemove (works even when cursor leaves the pin)
+  function onDocMouseMove(e) {
+    if (!activeDragPin) return;
+    e.preventDefault();
+    activeDragMoved = true;
+    var rect = canvasWrapEl.getBoundingClientRect();
+    var pctX = Math.max(1, Math.min(99, ((e.clientX - rect.left) / rect.width * 100)));
+    var pctY = Math.max(1, Math.min(99, ((e.clientY - rect.top) / rect.height * 100)));
+    var px = pctX.toFixed(2);
+    var py = pctY.toFixed(2);
+    // Move all elements of the pin
+    activeDragPin._els.forEach(function(el) {
+      el.setAttribute('cx', px + '%');
+      el.setAttribute('cy', py + '%');
+      if (el.tagName === 'text') { el.setAttribute('x', px + '%'); el.setAttribute('y', py + '%'); }
+    });
+    activeDragPin._pin.pctX = parseFloat(px);
+    activeDragPin._pin.pctY = parseFloat(py);
+  }
+
+  // Document-level mouseup (always fires even if cursor left the SVG)
+  function onDocMouseUp(e) {
+    if (!activeDragPin) return;
+    if (activeDragMoved) {
+      localStorage.setItem('ida_photo_pins', JSON.stringify(photoPins));
+    } else {
+      // Click (no movement) = show pin info
+      showPinInfo(activeDragPin._pinIndex);
+    }
+    activeDragPin.style.cursor = 'grab';
+    document.body.style.cursor = '';
+    activeDragPin = null;
+    activeDragMoved = false;
+  }
+
+  // Attach to document (removed on next renderFloorPlan via cleanup)
+  if (window._fpDragCleanup) window._fpDragCleanup();
+  document.addEventListener('mousemove', onDocMouseMove);
+  document.addEventListener('mouseup', onDocMouseUp);
+  window._fpDragCleanup = function() {
+    document.removeEventListener('mousemove', onDocMouseMove);
+    document.removeEventListener('mouseup', onDocMouseUp);
+  };
+
+  // Render measurement lines
+  svgMeasurements.filter(function(m) { return m.floor === currentFloor; }).forEach(function(m) {
+    var line = document.createElementNS(NS, 'line');
+    line.setAttribute('x1', m.pctX1 + '%'); line.setAttribute('y1', m.pctY1 + '%');
+    line.setAttribute('x2', m.pctX2 + '%'); line.setAttribute('y2', m.pctY2 + '%');
+    line.setAttribute('stroke', '#ff6f61'); line.setAttribute('stroke-width', '2'); line.setAttribute('stroke-dasharray', '6,3');
+    line.style.pointerEvents = 'none';
+    svg.appendChild(line);
+
+    // Endpoints
+    [['pctX1','pctY1'],['pctX2','pctY2']].forEach(function(pair) {
+      var ep = document.createElementNS(NS, 'circle');
+      ep.setAttribute('cx', m[pair[0]] + '%'); ep.setAttribute('cy', m[pair[1]] + '%');
+      ep.setAttribute('r', '3'); ep.setAttribute('fill', '#ff6f61');
+      ep.style.pointerEvents = 'none';
+      svg.appendChild(ep);
+    });
+
+    var mt = document.createElementNS(NS, 'text');
+    mt.setAttribute('x', ((m.pctX1 + m.pctX2) / 2) + '%');
+    mt.setAttribute('y', ((m.pctY1 + m.pctY2) / 2 - 2) + '%');
+    mt.setAttribute('text-anchor', 'middle'); mt.setAttribute('font-size', '12');
+    mt.setAttribute('fill', '#ff6f61'); mt.setAttribute('font-weight', '700');
+    mt.setAttribute('paint-order', 'stroke'); mt.setAttribute('stroke', 'white'); mt.setAttribute('stroke-width', '3');
+    mt.style.pointerEvents = 'none';
+    mt.textContent = m.label;
+    svg.appendChild(mt);
+  });
+
+  updatePhotoList();
+  updatePhotoLibraryCount();
+}
+
+// Click handler on the canvas wrap (works on both image and SVG)
+document.getElementById('canvasWrap').addEventListener('click', function(e) {
+  if (currentTool === 'select') return;
+  var wrap = document.getElementById('canvasWrap');
+  var rect = wrap.getBoundingClientRect();
+  var pctX = ((e.clientX - rect.left) / rect.width * 100).toFixed(2);
+  var pctY = ((e.clientY - rect.top) / rect.height * 100).toFixed(2);
+
+  if (currentTool === 'pin') {
+    // Open modal to tag pin
+    var sel = document.getElementById('pinRoom');
+    sel.textContent = '';
+    rooms.filter(function(r) { return r.floor === currentFloor; }).forEach(function(r) {
+      var opt = document.createElement('option'); opt.value = r.id; opt.textContent = r.name;
+      sel.appendChild(opt);
+    });
+    window._tempPin = { floor: currentFloor, pctX: parseFloat(pctX), pctY: parseFloat(pctY) };
+    // Populate photo dropdown
+    var photoSel = document.getElementById('pinPhoto');
+    photoSel.textContent = '';
+    var noOpt = document.createElement('option'); noOpt.value = ''; noOpt.textContent = '-- No photo --';
+    photoSel.appendChild(noOpt);
+    photoLibrary.forEach(function(photo) {
+      var opt = document.createElement('option'); opt.value = photo.id; opt.textContent = photo.name;
+      photoSel.appendChild(opt);
+    });
+    document.getElementById('photoPinModal').classList.add('show');
+  } else if (currentTool === 'measure') {
+    if (!measureStart) {
+      measureStart = { pctX: parseFloat(pctX), pctY: parseFloat(pctY) };
+      var mi = document.getElementById('measurementInfo');
+      mi.textContent = '';
+      var msg = document.createElement('div'); msg.style.color = '#ff6f61'; msg.textContent = 'Click second point...';
+      mi.appendChild(msg);
+    } else {
+      // Estimate distance using image proportions
+      // First/second floor images are ~1050x1800px representing ~30'x80' house
+      var scaleX = currentFloor === 'basement' ? 0.40 : 0.29; // ft per percent-x
+      var scaleY = currentFloor === 'basement' ? 0.53 : 0.44; // ft per percent-y
+      var dx = (parseFloat(pctX) - measureStart.pctX) * scaleX;
+      var dy = (parseFloat(pctY) - measureStart.pctY) * scaleY;
+      var ftDist = Math.sqrt(dx*dx + dy*dy).toFixed(1);
+
+      svgMeasurements.push({
+        floor: currentFloor,
+        pctX1: measureStart.pctX, pctY1: measureStart.pctY,
+        pctX2: parseFloat(pctX), pctY2: parseFloat(pctY),
+        label: ftDist + "'"
+      });
+      localStorage.setItem('ida_measurements', JSON.stringify(svgMeasurements));
+      measureStart = null;
+      renderFloorPlan();
+
+      var mi = document.getElementById('measurementInfo'); mi.textContent = '';
+      var r1 = document.createElement('div'); r1.className = 'measurement-row';
+      var s1 = document.createElement('span'); s1.textContent = 'Last Measurement';
+      var s2 = document.createElement('span'); s2.className = 'mval'; s2.textContent = ftDist + ' ft';
+      r1.appendChild(s1); r1.appendChild(s2); mi.appendChild(r1);
+      var r2 = document.createElement('div'); r2.className = 'measurement-row';
+      var s3 = document.createElement('span'); s3.textContent = 'Total Measurements';
+      var s4 = document.createElement('span'); s4.className = 'mval';
+      s4.textContent = String(svgMeasurements.filter(function(m) { return m.floor === currentFloor; }).length);
+      r2.appendChild(s3); r2.appendChild(s4); mi.appendChild(r2);
+      var cb = document.createElement('button'); cb.className = 'btn btn-outline'; cb.style.cssText = 'font-size:0.75rem;margin-top:8px';
+      cb.textContent = 'Clear All';
+      cb.addEventListener('click', function() {
+        svgMeasurements = svgMeasurements.filter(function(m) { return m.floor !== currentFloor; });
+        localStorage.setItem('ida_measurements', JSON.stringify(svgMeasurements));
+        renderFloorPlan();
+      });
+      mi.appendChild(cb);
+    }
+  }
+});
+
+// Photo preview popup (reusable)
+function showPhotoPopup(dataUrl, title) {
+  // Create overlay
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:2000;display:flex;align-items:center;justify-content:center;cursor:pointer;';
+  // Close on click anywhere
+  overlay.addEventListener('click', function() { document.body.removeChild(overlay); });
+  // Image
+  var img = document.createElement('img');
+  img.src = dataUrl;
+  img.style.cssText = 'max-width:90%;max-height:90vh;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,0.5);';
+  img.addEventListener('click', function(e) { e.stopPropagation(); }); // don't close when clicking image
+  overlay.appendChild(img);
+  // Title bar
+  if (title) {
+    var titleBar = document.createElement('div');
+    titleBar.style.cssText = 'position:absolute;top:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:white;padding:8px 20px;border-radius:6px;font-size:0.85rem;';
+    titleBar.textContent = title;
+    overlay.appendChild(titleBar);
+  }
+  // Close button
+  var closeBtn = document.createElement('div');
+  closeBtn.style.cssText = 'position:absolute;top:16px;right:24px;color:white;font-size:2rem;cursor:pointer;font-weight:700;';
+  closeBtn.textContent = '\u00D7';
+  closeBtn.addEventListener('click', function() { document.body.removeChild(overlay); });
+  overlay.appendChild(closeBtn);
+  // ESC to close
+  var escHandler = function(e) { if (e.key === 'Escape') { document.body.removeChild(overlay); document.removeEventListener('keydown', escHandler); } };
+  document.addEventListener('keydown', escHandler);
+  document.body.appendChild(overlay);
+}
+
+// Photo library stored in localStorage
+var photoLibrary = JSON.parse(localStorage.getItem('ida_photo_library') || '[]');
+
+function savePhotoLibrary() {
+  try { localStorage.setItem('ida_photo_library', JSON.stringify(photoLibrary)); }
+  catch(e) { alert('Photo storage full. Try smaller images or fewer photos.'); }
+}
+
+function addPhotosToLibrary(files, callback) {
+  var count = 0;
+  for (var i = 0; i < files.length; i++) {
+    (function(file) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        // Resize to save localStorage space
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var maxW = 800, maxH = 600;
+          var w = img.width, h = img.height;
+          if (w > maxW) { h = h * maxW / w; w = maxW; }
+          if (h > maxH) { w = w * maxH / h; h = maxH; }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          var dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          photoLibrary.push({
+            id: Date.now() + '_' + Math.random().toString(36).substr(2,5),
+            name: file.name,
+            data: dataUrl,
+            date: new Date().toISOString()
+          });
+          count++;
+          if (count === files.length) {
+            savePhotoLibrary();
+            if (callback) callback();
+          }
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    })(files[i]);
+  }
+}
+
+function showPinInfo(idx) {
+  var floorPins = photoPins.filter(function(p) { return p.floor === currentFloor; });
+  var pin = floorPins[idx];
+  if (!pin) return;
+  var room = rooms.find(function(r) { return r.id === pin.roomId; });
+
+  var info = document.getElementById('roomInfo');
+  info.textContent = '';
+  var h = document.createElement('div'); h.style.cssText = 'font-weight:600;font-size:1rem;margin-bottom:8px;color:#ff6f61';
+  h.textContent = 'Pin #' + (idx + 1);
+  info.appendChild(h);
+
+  // Show photo if attached
+  if (pin.photoId) {
+    var photo = photoLibrary.find(function(p) { return p.id === pin.photoId; });
+    if (photo) {
+      var imgWrap = document.createElement('div');
+      imgWrap.style.cssText = 'margin-bottom:8px;cursor:pointer;border-radius:6px;overflow:hidden;border:2px solid #ddd;';
+      var img = document.createElement('img');
+      img.src = photo.data;
+      img.style.cssText = 'width:100%;display:block;';
+      img.title = 'Click to view full size';
+      img.addEventListener('click', (function(p) { return function() { showPhotoPopup(p.data, p.name); }; })(photo));
+      imgWrap.appendChild(img);
+      info.appendChild(imgWrap);
+    }
+  }
+
+  var md = document.createElement('div'); md.className = 'measurement-display';
+  var roomDisplay = pin.roomName || (room ? room.name : pin.roomId || 'Unknown');
+  [['Room', roomDisplay],
+   ['Damage Type', pin.damageType || 'N/A'],
+   ['Category', pin.category || 'N/A'],
+   ['Description', pin.desc || 'N/A'],
+   ['Photo', pin.photoId ? (photoLibrary.find(function(p){return p.id===pin.photoId;}) || {}).name || 'attached' : 'None']
+  ].forEach(function(pair) {
+    var mr = document.createElement('div'); mr.className = 'measurement-row';
+    var s1 = document.createElement('span'); s1.textContent = pair[0];
+    var s2 = document.createElement('span'); s2.className = 'mval'; s2.textContent = pair[1];
+    mr.appendChild(s1); mr.appendChild(s2); md.appendChild(mr);
+  });
+  info.appendChild(md);
+
+  // Attach/change photo button
+  var attachBtn = document.createElement('button'); attachBtn.className = 'btn btn-outline';
+  attachBtn.style.cssText = 'font-size:0.75rem;margin-top:6px;margin-right:6px;';
+  attachBtn.textContent = pin.photoId ? 'Change Photo' : 'Attach Photo';
+  attachBtn.addEventListener('click', function() {
+    showPhotoSelector(pin, idx);
+  });
+  info.appendChild(attachBtn);
+
+  var delBtn = document.createElement('button'); delBtn.className = 'btn btn-outline';
+  delBtn.style.cssText = 'font-size:0.75rem;margin-top:6px;color:#ff6f61;border-color:#ff6f61';
+  delBtn.textContent = 'Remove Pin';
+  delBtn.addEventListener('click', function() {
+    var globalIdx = photoPins.indexOf(pin);
+    if (globalIdx >= 0) { photoPins.splice(globalIdx, 1); localStorage.setItem('ida_photo_pins', JSON.stringify(photoPins)); }
+    info.textContent = 'Pin removed';
+    renderFloorPlan();
+  });
+  info.appendChild(delBtn);
+}
+
+function showPhotoSelector(pin, pinIdx) {
+  var info = document.getElementById('roomInfo');
+  // Show photo library as selectable grid
+  var selector = document.createElement('div');
+  selector.style.cssText = 'margin-top:8px;max-height:250px;overflow-y:auto;';
+
+  var title = document.createElement('div');
+  title.style.cssText = 'font-weight:600;font-size:0.85rem;margin-bottom:6px;';
+  title.textContent = 'Select a photo (' + photoLibrary.length + ' available):';
+  selector.appendChild(title);
+
+  if (photoLibrary.length === 0) {
+    var empty = document.createElement('div');
+    empty.style.cssText = 'color:#999;font-size:0.8rem;';
+    empty.textContent = 'No photos uploaded yet. Use the upload zone above to add photos first.';
+    selector.appendChild(empty);
+  }
+
+  var grid = document.createElement('div');
+  grid.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:4px;';
+
+  photoLibrary.forEach(function(photo) {
+    var thumb = document.createElement('div');
+    thumb.style.cssText = 'cursor:pointer;border:2px solid ' + (pin.photoId === photo.id ? '#ff6f61' : '#ddd') + ';border-radius:4px;overflow:hidden;aspect-ratio:1;';
+    var img = document.createElement('img');
+    img.src = photo.data;
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+    img.title = photo.name;
+    thumb.appendChild(img);
+    thumb.addEventListener('click', function() {
+      pin.photoId = photo.id;
+      localStorage.setItem('ida_photo_pins', JSON.stringify(photoPins));
+      showPinInfo(pinIdx);
+      renderFloorPlan();
+    });
+    grid.appendChild(thumb);
+  });
+
+  selector.appendChild(grid);
+  info.appendChild(selector);
+}
+
+function updatePhotoLibraryCount() {
+  var badge = document.getElementById('photoCountBadge');
+  if (badge) badge.textContent = '(' + photoLibrary.length + ' photos)';
+  // Update preview strip
+  var preview = document.getElementById('photoLibraryPreview');
+  if (!preview) return;
+  preview.textContent = '';
+  photoLibrary.forEach(function(photo, pi) {
+    var thumb = document.createElement('img');
+    thumb.src = photo.data;
+    thumb.title = photo.name + ' - Click to preview';
+    thumb.style.cssText = 'width:28px;height:28px;object-fit:cover;border-radius:3px;border:1px solid #ddd;cursor:pointer;transition:transform 0.1s;';
+    thumb.addEventListener('mouseenter', function() { this.style.transform = 'scale(1.3)'; this.style.zIndex = '5'; });
+    thumb.addEventListener('mouseleave', function() { this.style.transform = ''; this.style.zIndex = ''; });
+    thumb.addEventListener('click', (function(p) { return function() { showPhotoPopup(p.data, p.name); }; })(photo));
+    preview.appendChild(thumb);
+  });
+}
+
+function updatePhotoList() {
+  var list = document.getElementById('photoList');
+  if (!list) return;
+  list.textContent = '';
+  var floorPins = photoPins.filter(function(p) { return p.floor === currentFloor; });
+  if (floorPins.length === 0) {
+    var msg = document.createElement('div'); msg.style.cssText = 'color:#999;font-size:0.8rem';
+    msg.textContent = 'No photos tagged on this floor'; list.appendChild(msg);
+    return;
+  }
+  floorPins.forEach(function(pin, i) {
+    var room = rooms.find(function(r) { return r.id === pin.roomId; });
+    var item = document.createElement('div'); item.className = 'photo-item';
+    item.style.cssText += 'display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #f0f0f0;cursor:pointer;';
+
+    // Thumbnail if photo attached - click thumbnail for preview, click text for pin info
+    if (pin.photoId) {
+      var photo = photoLibrary.find(function(p) { return p.id === pin.photoId; });
+      if (photo) {
+        var thumb = document.createElement('img');
+        thumb.src = photo.data;
+        thumb.style.cssText = 'width:36px;height:36px;object-fit:cover;border-radius:3px;border:1px solid #ddd;flex-shrink:0;cursor:pointer;transition:transform 0.1s;';
+        thumb.title = 'Click to preview photo';
+        thumb.addEventListener('mouseenter', function() { this.style.transform = 'scale(1.5)'; this.style.zIndex = '5'; });
+        thumb.addEventListener('mouseleave', function() { this.style.transform = ''; this.style.zIndex = ''; });
+        thumb.addEventListener('click', (function(p) { return function(e) { e.stopPropagation(); showPhotoPopup(p.data, p.name); }; })(photo));
+        item.appendChild(thumb);
+      }
+    } else {
+      var dot = document.createElement('span'); dot.className = 'photo-dot';
+      item.appendChild(dot);
+    }
+
+    var num = document.createElement('span'); num.style.cssText = 'font-weight:600;font-size:0.75rem;color:#ff6f61;min-width:18px;flex-shrink:0;';
+    num.textContent = '#' + (i + 1);
+    var txt = document.createElement('span'); txt.style.cssText = 'font-size:0.78rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;';
+    var roomLabel = pin.roomName || (room ? room.name : pin.roomId || '?');
+    txt.textContent = roomLabel + ': ' + (pin.desc || pin.damageType);
+    item.addEventListener('click', (function(idx) { return function() { showPinInfo(idx); }; })(i));
+    item.appendChild(num); item.appendChild(txt); list.appendChild(item);
+  });
+}
+
+// ==================== MEASUREMENTS TAB ====================
+function renderMeasurementsTab() {
+  var wrap = document.getElementById('measurementTableWrap');
+  var tbl = document.createElement('table');
+  var thead = document.createElement('thead');
+  var thr = document.createElement('tr');
+  ['Floor', 'Room', 'Dimensions', 'Floor Area (SF)', 'Wall Area (SF)', 'Ida Damage?', 'Ida SF', 'Reno SF'].forEach(function(h, i) {
+    var th = document.createElement('th'); th.textContent = h;
+    if (i >= 3 && i !== 5) th.style.textAlign = 'right';
+    thr.appendChild(th);
+  });
+  thead.appendChild(thr); tbl.appendChild(thead);
+  var tbody = document.createElement('tbody');
+  var totalFloor = 0, totalWall = 0, totalIdaFloor = 0;
+
+  rooms.forEach(function(r) {
+    var fa = r.wFt * r.hFt;
+    var perim = 2 * (r.wFt + r.hFt);
+    var wa = perim * 10;
+    totalFloor += fa; totalWall += wa;
+    var idaFA = r.idaDamage ? fa : 0; totalIdaFloor += idaFA;
+
+    var tr = document.createElement('tr');
+    var td1 = document.createElement('td'); td1.textContent = r.floor === 'first' ? '1st' : '2nd';
+    var td2 = document.createElement('td'); td2.textContent = r.name;
+    var td3 = document.createElement('td'); td3.textContent = r.w + ' x ' + r.h;
+    var td4 = document.createElement('td'); td4.className = 'amount'; td4.style.textAlign = 'right'; td4.textContent = fa.toFixed(0);
+    var td5 = document.createElement('td'); td5.className = 'amount'; td5.style.textAlign = 'right'; td5.textContent = wa.toFixed(0);
+    var td6 = document.createElement('td');
+    var cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = r.idaDamage;
+    cb.addEventListener('change', function() { r.idaDamage = cb.checked; renderMeasurementsTab(); });
+    td6.appendChild(cb);
+    var td7 = document.createElement('td'); td7.className = 'amount ida-amt'; td7.style.textAlign = 'right'; td7.textContent = idaFA > 0 ? idaFA.toFixed(0) : '-';
+    var td8 = document.createElement('td'); td8.className = 'amount reno-amt'; td8.style.textAlign = 'right'; td8.textContent = (fa - idaFA).toFixed(0);
+    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3); tr.appendChild(td4);
+    tr.appendChild(td5); tr.appendChild(td6); tr.appendChild(td7); tr.appendChild(td8);
+    tbody.appendChild(tr);
+  });
+
+  var tfoot = document.createElement('tfoot');
+  var ftr = document.createElement('tr'); ftr.className = 'totals-row';
+  var f1 = document.createElement('td'); f1.setAttribute('colspan', '3'); f1.textContent = 'TOTALS';
+  var f2 = document.createElement('td'); f2.className = 'amount'; f2.style.textAlign = 'right'; f2.textContent = totalFloor.toFixed(0) + ' SF';
+  var f3 = document.createElement('td'); f3.className = 'amount'; f3.style.textAlign = 'right'; f3.textContent = totalWall.toFixed(0) + ' SF';
+  var f4 = document.createElement('td');
+  var f5 = document.createElement('td'); f5.className = 'amount ida-amt'; f5.style.textAlign = 'right'; f5.textContent = totalIdaFloor.toFixed(0) + ' SF';
+  var f6 = document.createElement('td'); f6.className = 'amount reno-amt'; f6.style.textAlign = 'right'; f6.textContent = (totalFloor - totalIdaFloor).toFixed(0) + ' SF';
+  ftr.appendChild(f1); ftr.appendChild(f2); ftr.appendChild(f3); ftr.appendChild(f4); ftr.appendChild(f5); ftr.appendChild(f6);
+  tfoot.appendChild(ftr);
+  tbl.appendChild(tbody); tbl.appendChild(tfoot);
+  wrap.textContent = ''; wrap.appendChild(tbl);
+
+  var pctIda = (totalIdaFloor / totalFloor * 100).toFixed(1);
+  var sc = document.getElementById('measurementSummaryCards');
+  sc.textContent = '';
+  [{ l: 'Total Floor Area', v: totalFloor.toFixed(0) + ' SF', c: 'total' },
+   { l: 'Ida-Damaged Area', v: totalIdaFloor.toFixed(0) + ' SF', c: 'ida', d: pctIda + '% of total' },
+   { l: 'Renovation-Only Area', v: (totalFloor - totalIdaFloor).toFixed(0) + ' SF', c: 'reno', d: (100-parseFloat(pctIda)).toFixed(1) + '% of total' },
+   { l: 'Total Wall Area (10\' ceil)', v: totalWall.toFixed(0) + ' SF', c: '' }
+  ].forEach(function(x) {
+    var card = document.createElement('div'); card.className = 'summary-card ' + x.c;
+    var lbl = document.createElement('div'); lbl.className = 'label'; lbl.textContent = x.l;
+    var val = document.createElement('div'); val.className = 'value'; val.textContent = x.v;
+    card.appendChild(lbl); card.appendChild(val);
+    if (x.d) { var det = document.createElement('div'); det.className = 'detail'; det.textContent = x.d; card.appendChild(det); }
+    sc.appendChild(card);
+  });
+}
+
+// ==================== EXPORT ====================
+document.getElementById('exportCSVBtn').addEventListener('click', function() {
+  var csv = 'Invoice #,Date,Line Item,Amount,Category,Ida Amount,Reno Amount\n';
+  invoices.forEach(function(inv) {
+    inv.items.forEach(function(item) {
+      var idaAmt = getItemIda(item);
+      var renoAmt = item.amount - idaAmt;
+      csv += inv.num + ',' + inv.date + ',"' + item.desc + '",' + item.amount.toFixed(2) + ',' + item.cat + ',' + idaAmt.toFixed(2) + ',' + renoAmt.toFixed(2) + '\n';
+    });
+  });
+  var blob = new Blob([csv], { type: 'text/csv' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'trainque_invoices_ida_breakdown.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+});
+
+// ==================== EVENTS ====================
+document.getElementById('modalCloseBtn').addEventListener('click', function() {
+  document.getElementById('photoPinModal').classList.remove('show');
+});
+
+// Manual room name toggle
+document.getElementById('pinRoomManual').addEventListener('change', function() {
+  var isManual = this.checked;
+  document.getElementById('pinRoom').style.display = isManual ? 'none' : '';
+  document.getElementById('pinRoomCustom').style.display = isManual ? '' : 'none';
+});
+
+document.getElementById('savePinBtn').addEventListener('click', function() {
+  var isManual = document.getElementById('pinRoomManual').checked;
+  var roomValue = isManual ? document.getElementById('pinRoomCustom').value : document.getElementById('pinRoom').value;
+  var pin = {
+    roomId: roomValue,
+    roomName: isManual ? roomValue : null,
+    pctX: window._tempPin ? window._tempPin.pctX : 50,
+    pctY: window._tempPin ? window._tempPin.pctY : 50,
+    floor: window._tempPin ? window._tempPin.floor : currentFloor,
+    desc: document.getElementById('pinDesc').value,
+    damageType: document.getElementById('pinDamageType').value,
+    category: document.getElementById('pinCategory').value,
+    photoId: document.getElementById('pinPhoto').value || null,
+    timestamp: new Date().toISOString()
+  };
+  photoPins.push(pin);
+  localStorage.setItem('ida_photo_pins', JSON.stringify(photoPins));
+  document.getElementById('photoPinModal').classList.remove('show');
+  document.getElementById('pinDesc').value = '';
+  document.getElementById('pinRoomCustom').value = '';
+  document.getElementById('pinRoomManual').checked = false;
+  document.getElementById('pinRoom').style.display = '';
+  document.getElementById('pinRoomCustom').style.display = 'none';
+  renderFloorPlan();
+});
+
+document.getElementById('uploadZone').addEventListener('click', function(e) {
+  if (e.target.tagName === 'INPUT') return; // don't double-trigger
+  document.getElementById('photoInput').click();
+});
+
+document.getElementById('photoInput').addEventListener('change', function(e) {
+  var files = e.target.files;
+  if (!files || files.length === 0) return;
+  // Copy files array before async processing
+  var fileArr = [];
+  for (var fi = 0; fi < files.length; fi++) fileArr.push(files[fi]);
+  var loaded = 0;
+  fileArr.forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement('canvas');
+        var maxW = 800, maxH = 600;
+        var w = img.width, h = img.height;
+        if (w > maxW) { h = h * maxW / w; w = maxW; }
+        if (h > maxH) { w = w * maxH / h; h = maxH; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        photoLibrary.push({
+          id: Date.now() + '_' + Math.random().toString(36).substr(2,5),
+          name: file.name,
+          data: canvas.toDataURL('image/jpeg', 0.7),
+          date: new Date().toISOString()
+        });
+        loaded++;
+        if (loaded === fileArr.length) {
+          savePhotoLibrary();
+          updatePhotoLibraryCount();
+          renderFloorPlan();
+        }
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  // Reset input after a delay so files aren't cleared during read
+  var input = e.target;
+  setTimeout(function() { input.value = ''; }, 1000);
+});
+
+document.getElementById('floorSelect').addEventListener('change', function() {
+  currentFloor = this.value;
+  renderFloorPlan();
+});
+
+document.querySelectorAll('.floorplan-toolbar .tool-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var tool = btn.getAttribute('data-tool');
+    if (!tool) return;
+    currentTool = tool;
+    document.querySelectorAll('.floorplan-toolbar .tool-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    var wrap = document.getElementById('canvasWrap');
+    wrap.style.cursor = tool === 'select' ? 'default' : 'crosshair';
+    if (tool !== 'measure') measureStart = null;
+    // Update SVG pointer events based on tool
+    var svg = document.getElementById('floorplanSVG');
+    svg.style.pointerEvents = (tool === 'pin' || tool === 'measure') ? 'none' : 'none';
+  });
+});
+
+// Lock pins button
+function updateLockButton() {
+  var btn = document.getElementById('btnLockPins');
+  if (pinsLocked) {
+    btn.textContent = '\uD83D\uDD12 Locked';
+    btn.style.background = '#ff6f61';
+    btn.style.color = 'white';
+    btn.style.borderColor = '#ff6f61';
+  } else {
+    btn.textContent = '\uD83D\uDD13 Unlock';
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  }
+}
+updateLockButton();
+
+document.getElementById('btnLockPins').addEventListener('click', function() {
+  pinsLocked = !pinsLocked;
+  localStorage.setItem('ida_pins_locked', pinsLocked ? 'true' : 'false');
+  updateLockButton();
+  renderFloorPlan();
+});
+
+// ==================== INIT ====================
+renderOverview();
+renderInvoices();
+
+})();
+</script>
+
+<!-- Three.js for Digital Twin -->
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+var scene, camera, renderer, controls;
+var groups = { roof: null, second: null, first: null, basement: null, porch: null };
+var idaOverlays = [];
+var isIdaShown = false;
+var isXray = false;
+var allMaterials = [];
+
+// Dimensions from Jessica Becker DWG / Flynn Architect (in feet, origin at grade)
+// User specified: 1st floor 7' above ground, 14' ceilings, 2nd floor 12' ceilings
+var W = 30;     // total house width (west col ~16' + east col ~14')
+var D = 80;     // total house depth (south to north)
+var GRADE = 0;
+var BSMT = -3;        // basement floor (~3' below grade)
+var FF = 7;           // 1st floor height above grade
+var SF = FF + 14;     // 2nd floor = 7 + 14 = 21'
+var CEIL2 = SF + 12;  // top of 2nd floor walls = 21 + 12 = 33'
+var ROOF_PEAK = CEIL2 + 8; // ridge = 41' (6:12 slope over ~16' half-width)
+var PORCH_D = 8;      // front porch depth
+var DECK_D = 10;      // rear deck depth
+var DECK_W = 14;      // rear deck width
+// West column (master, bath1, bed2, bed3, sunroom) = 16' wide
+var WC = 16;
+// East column (living front, living back, kitchen, stair) = 14' wide
+var EC = 14;
+
+// Colors (matched to photo of actual home)
+var COL_SIDING = 0x8fb0be;  // light steel blue lap siding
+var COL_TRIM = 0xf0f0f0;    // white trim
+var COL_ROOF = 0x5a5a5a;    // dark gray shingles
+var COL_WINDOW = 0x1a3040;  // dark glass
+var COL_DOOR = 0x6b1a1a;    // dark red/maroon front door
+var COL_DECK = 0x8a8a8a;    // porch floor (painted gray)
+var COL_FOUND = 0x7a9aaa;   // foundation (matches siding)
+var COL_IDA = 0xff6f61;
+var COL_GROUND = 0x5a7a4a;
+
+// Define tap helper globally (used by both Digital Twin and Wind Forces)
+THREE.Mesh.prototype.tap = THREE.Mesh.prototype.tap || function(fn) { fn(this); return this; };
+
+function initDigitalTwin() {
+  var container = document.getElementById('dtCanvas');
+  if (!container || container.childElementCount > 0) return;
+
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xe8f0f5);
+  scene.fog = new THREE.Fog(0xe8f0f5, 150, 400);
+
+  camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+  camera.position.set(60, 40, 80);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  container.appendChild(renderer.domElement);
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.target.set(0, 15, 0);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.maxPolarAngle = Math.PI * 0.48;
+  controls.minDistance = 30;
+  controls.maxDistance = 200;
+  controls.update();
+
+  // Lighting
+  var amb = new THREE.AmbientLight(0xffffff, 0.5);
+  scene.add(amb);
+  var sun = new THREE.DirectionalLight(0xfff5e0, 1.2);
+  sun.position.set(40, 60, 30);
+  sun.castShadow = true;
+  sun.shadow.mapSize.width = 2048;
+  sun.shadow.mapSize.height = 2048;
+  sun.shadow.camera.near = 1;
+  sun.shadow.camera.far = 200;
+  sun.shadow.camera.left = -60;
+  sun.shadow.camera.right = 60;
+  sun.shadow.camera.top = 60;
+  sun.shadow.camera.bottom = -60;
+  scene.add(sun);
+  var fill = new THREE.DirectionalLight(0xaaccff, 0.3);
+  fill.position.set(-30, 20, -20);
+  scene.add(fill);
+
+  // Ground plane
+  var groundGeo = new THREE.PlaneGeometry(300, 300);
+  var groundMat = new THREE.MeshLambertMaterial({ color: COL_GROUND });
+  var ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -0.1;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  // Sidewalk
+  var swGeo = new THREE.BoxGeometry(W + 10, 0.3, 6);
+  var swMat = new THREE.MeshLambertMaterial({ color: 0xcccccc });
+  var sw = new THREE.Mesh(swGeo, swMat);
+  sw.position.set(0, 0.15, -(D/2) - 8);
+  sw.receiveShadow = true;
+  scene.add(sw);
+
+  // Street
+  var stGeo = new THREE.PlaneGeometry(W + 40, 20);
+  var stMat = new THREE.MeshLambertMaterial({ color: 0x444444 });
+  var st = new THREE.Mesh(stGeo, stMat);
+  st.rotation.x = -Math.PI / 2;
+  st.position.set(0, 0.05, -(D/2) - 18);
+  scene.add(st);
+
+  buildHouse();
+
+  // Resize handler
+  window.addEventListener('resize', function() {
+    if (!container.clientWidth) return;
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+  });
+
+  animate();
+}
+
+function mat(color, opts) {
+  var m = new THREE.MeshLambertMaterial(Object.assign({ color: color }, opts || {}));
+  allMaterials.push(m);
+  return m;
+}
+
+function box(w, h, d, material) {
+  var geo = new THREE.BoxGeometry(w, h, d);
+  var mesh = new THREE.Mesh(geo, material);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  return mesh;
+}
+
+function buildHouse() {
+  // From floor plan: main rectangle + rear-left stub + two bay windows
+  var wallT = 0.8;
+  var HW = 30;  // main house width
+  var HD = 60;  // main house depth (master to kitchen)
+  var STUB_W = 4;   // stub extends 4' to the right (east)
+  var STUB_D = 10;  // stub depth = 10'
+  var BAY_P = 3;   // bay window projection from wall
+  var BAY_W = 10;  // bay window width along wall
+
+  var sidingMat = mat(COL_SIDING);
+  var trimMat = mat(COL_TRIM);
+  var windowMat = mat(COL_WINDOW);
+  var doorMat = mat(COL_DOOR);
+  var railMat = mat(0xffffff);
+  var stairMat = mat(0xcccccc);
+  var roofMat = mat(COL_ROOF);
+  var deckMat = mat(COL_DECK);
+  var colMat = mat(0xffffff);
+  var floorMat = mat(0xb8a88a);
+  var fasciaMat = mat(0xeeeeee);
+  THREE.Mesh.prototype.tap = function(fn) { fn(this); return this; };
+
+  var S = -HD/2;     // south face = -30
+  var N = HD/2;      // north face of main block = +30
+  var SN = N+STUB_D; // stub north = +40
+  var W_X = -HW/2;   // west face = -15
+  var E_X = HW/2;    // east face = +15
+  var CW = 0;        // center wall
+
+  // Bay window positions (Z coordinate along wall, centered on bedroom2/living room area)
+  var WBAY_Z = -5;   // west bay center (bedroom 2 area)
+  var EBAY_Z = -3;   // east bay center (living room area)
+
+  // Full height from grade to roof for bays
+  var fullH = CEIL2;
+
+  // ── BASEMENT ──
+  groups.basement = new THREE.Group();
+  groups.basement.add(box(HW, FF+3, HD, mat(COL_FOUND)).tap(function(m){m.position.set(0,(FF+3)/2-3,0);}));
+  // Stub foundation (right side bump-out)
+  groups.basement.add(box(STUB_W, FF+3, STUB_D, mat(COL_FOUND)).tap(function(m){m.position.set(E_X+STUB_W/2,(FF+3)/2-3,N-STUB_D/2);}));
+  scene.add(groups.basement);
+
+  // Helper: build walls for one story
+  function walls(grp, yB, yT) {
+    var h = yT - yB, cy = yB + h/2;
+    // Main block walls
+    // West wall - split around west bay
+    grp.add(box(wallT, h, WBAY_Z-BAY_W/2-S, sidingMat).tap(function(m){m.position.set(W_X, cy, (S+WBAY_Z-BAY_W/2)/2);}));
+    grp.add(box(wallT, h, N-(WBAY_Z+BAY_W/2), sidingMat).tap(function(m){m.position.set(W_X, cy, (WBAY_Z+BAY_W/2+N)/2);}));
+    // East wall - split around east bay
+    grp.add(box(wallT, h, EBAY_Z-BAY_W/2-S, sidingMat).tap(function(m){m.position.set(E_X, cy, (S+EBAY_Z-BAY_W/2)/2);}));
+    grp.add(box(wallT, h, N-(EBAY_Z+BAY_W/2), sidingMat).tap(function(m){m.position.set(E_X, cy, (EBAY_Z+BAY_W/2+N)/2);}));
+    // South wall (front)
+    grp.add(box(HW, h, wallT, sidingMat).tap(function(m){m.position.set(0, cy, S);}));
+    // North wall (full width, flat back)
+    grp.add(box(HW, h, wallT, sidingMat).tap(function(m){m.position.set(0, cy, N);}));
+    // Right side stub-out (4' east, rear 24' for Extra Room / Sun Room)
+    var stubS = N - STUB_D; // stub starts 24' from north wall
+    var stubE = E_X + STUB_W; // stub east edge
+    // Stub east wall (runs along the stub for STUB_D length)
+    grp.add(box(wallT, h, STUB_D, sidingMat).tap(function(m){m.position.set(stubE, cy, stubS + STUB_D/2);}));
+    // Stub north wall (4' wide, closing the north end)
+    grp.add(box(STUB_W, h, wallT, sidingMat).tap(function(m){m.position.set(E_X + STUB_W/2, cy, N);}));
+    // Stub south wall (4' wide, closing the south end of the bump-out)
+    grp.add(box(STUB_W, h, wallT, sidingMat).tap(function(m){m.position.set(E_X + STUB_W/2, cy, stubS);}));
+    // Center party wall
+    grp.add(box(wallT, h, HD, mat(0xb0a888)).tap(function(m){m.position.set(CW, cy, 0);}));
+  }
+
+  // Bay window builder - simple rectangular bump-out (per reference rendering)
+  var darkRailMat = mat(0x333333); // dark spindles per reference
+  function addBay(grp, xBase, zCenter, projDir, yB, yT) {
+    var h = yT - yB, cy = yB + h/2;
+    var px = xBase + projDir * BAY_P;
+    var halfW = BAY_W / 2;
+    // Front face (outer wall, parallel to main wall)
+    grp.add(box(wallT, h, BAY_W, sidingMat).tap(function(m){m.position.set(px, cy, zCenter);}));
+    // Two side walls (perpendicular, connecting front to main wall)
+    grp.add(box(BAY_P, h, wallT, sidingMat).tap(function(m){m.position.set(xBase + projDir*BAY_P/2, cy, zCenter - halfW);}));
+    grp.add(box(BAY_P, h, wallT, sidingMat).tap(function(m){m.position.set(xBase + projDir*BAY_P/2, cy, zCenter + halfW);}));
+    // Windows on front face (two tall windows)
+    grp.add(box(0.4, h*0.45, BAY_W*0.35, windowMat).tap(function(m){m.position.set(px+projDir*0.3, cy, zCenter-halfW*0.35);}));
+    grp.add(box(0.4, h*0.45, BAY_W*0.35, windowMat).tap(function(m){m.position.set(px+projDir*0.3, cy, zCenter+halfW*0.35);}));
+    // Window trim
+    grp.add(box(0.2, h*0.48, BAY_W*0.38, trimMat).tap(function(m){m.position.set(px+projDir*0.15, cy, zCenter-halfW*0.35);}));
+    grp.add(box(0.2, h*0.48, BAY_W*0.38, trimMat).tap(function(m){m.position.set(px+projDir*0.15, cy, zCenter+halfW*0.35);}));
+    // Trim band at top and bottom of bay
+    grp.add(box(wallT+0.3, 0.5, BAY_W+0.6, trimMat).tap(function(m){m.position.set(px, yT-0.25, zCenter);}));
+    grp.add(box(wallT+0.3, 0.5, BAY_W+0.6, trimMat).tap(function(m){m.position.set(px, yB+0.25, zCenter);}));
+    grp.add(box(BAY_P+0.3, 0.5, wallT+0.3, trimMat).tap(function(m){m.position.set(xBase+projDir*BAY_P/2, yT-0.25, zCenter-halfW);}));
+    grp.add(box(BAY_P+0.3, 0.5, wallT+0.3, trimMat).tap(function(m){m.position.set(xBase+projDir*BAY_P/2, yT-0.25, zCenter+halfW);}));
+    grp.add(box(BAY_P+0.3, 0.5, wallT+0.3, trimMat).tap(function(m){m.position.set(xBase+projDir*BAY_P/2, yB+0.25, zCenter-halfW);}));
+    grp.add(box(BAY_P+0.3, 0.5, wallT+0.3, trimMat).tap(function(m){m.position.set(xBase+projDir*BAY_P/2, yB+0.25, zCenter+halfW);}));
+  }
+
+  // ── FIRST FLOOR ──
+  groups.first = new THREE.Group();
+  // Floor slabs
+  groups.first.add(box(HW, 0.5, HD, floorMat).tap(function(m){m.position.set(0, FF, 0);}));
+  // Foundation walls (grade to FF)
+  walls(groups.first, 0, FF);
+  // 1st floor walls (FF to SF)
+  walls(groups.first, FF, SF);
+  // West bay window (bedroom 2 area) - full height
+  addBay(groups.first, W_X, WBAY_Z, -1, 0, SF);
+  // East bay window (living room area) - full height
+  addBay(groups.first, E_X, EBAY_Z, 1, 0, SF);
+  // Windows - west wall (not in bay areas)
+  [-25, 8, 20].forEach(function(z){
+    groups.first.add(box(0.5,5,3,windowMat).tap(function(m){m.position.set(W_X-0.3,FF+7,z);}));
+    groups.first.add(box(0.3,5.6,3.6,trimMat).tap(function(m){m.position.set(W_X-0.1,FF+7,z);}));
+  });
+  // Windows - east wall (not in bay areas)
+  [-22, 8, 14].forEach(function(z){
+    groups.first.add(box(0.5,5,3,windowMat).tap(function(m){m.position.set(E_X+0.3,FF+7,z);}));
+    groups.first.add(box(0.3,5.6,3.6,trimMat).tap(function(m){m.position.set(E_X+0.1,FF+7,z);}));
+  });
+  // Stub windows (west and north)
+  // Front doors (maroon)
+  groups.first.add(box(3.5,8,0.5,doorMat).tap(function(m){m.position.set(-7,FF+4,S-0.3);}));
+  groups.first.add(box(3.5,8,0.5,doorMat).tap(function(m){m.position.set(7,FF+4,S-0.3);}));
+  // Front windows flanking doors
+  [-12,12].forEach(function(x){
+    groups.first.add(box(3,5,0.5,windowMat).tap(function(m){m.position.set(x,FF+7,S-0.3);}));
+    groups.first.add(box(3.6,5.6,0.3,trimMat).tap(function(m){m.position.set(x,FF+7,S-0.1);}));
+  });
+  // Stub floor slab (1st floor)
+  groups.first.add(box(STUB_W, 0.5, STUB_D, floorMat).tap(function(m){m.position.set(E_X+STUB_W/2, FF, N-STUB_D/2);}));
+  // Stub windows (1st floor - east face)
+  groups.first.add(box(0.5,4,3,windowMat).tap(function(m){m.position.set(E_X+STUB_W+0.3, FF+7, N-STUB_D*0.3);}));
+  groups.first.add(box(0.5,4,3,windowMat).tap(function(m){m.position.set(E_X+STUB_W+0.3, FF+7, N-STUB_D*0.7);}));
+  scene.add(groups.first);
+
+  // ── SECOND FLOOR ──
+  groups.second = new THREE.Group();
+  groups.second.add(box(HW, 0.5, HD, floorMat).tap(function(m){m.position.set(0, SF, 0);}));
+  walls(groups.second, SF, CEIL2);
+  // 2nd floor bays (continuation)
+  addBay(groups.second, W_X, WBAY_Z, -1, SF, CEIL2);
+  addBay(groups.second, E_X, EBAY_Z, 1, SF, CEIL2);
+  // 2nd floor windows
+  [-25, 8, 20].forEach(function(z){
+    groups.second.add(box(0.5,5,3,windowMat).tap(function(m){m.position.set(W_X-0.3,SF+6,z);}));
+    groups.second.add(box(0.3,5.6,3.6,trimMat).tap(function(m){m.position.set(W_X-0.1,SF+6,z);}));
+  });
+  [-22, 8, 14].forEach(function(z){
+    groups.second.add(box(0.5,5,3,windowMat).tap(function(m){m.position.set(E_X+0.3,SF+6,z);}));
+    groups.second.add(box(0.3,5.6,3.6,trimMat).tap(function(m){m.position.set(E_X+0.1,SF+6,z);}));
+  });
+  // Stub windows
+  // Front windows
+  [-10,-3,5].forEach(function(x){
+    groups.second.add(box(3,5,0.5,windowMat).tap(function(m){m.position.set(x,SF+6,S-0.3);}));
+    groups.second.add(box(3.6,5.6,0.3,trimMat).tap(function(m){m.position.set(x,SF+6,S-0.1);}));
+  });
+  // Stub floor slab (2nd floor)
+  groups.second.add(box(STUB_W, 0.5, STUB_D, floorMat).tap(function(m){m.position.set(E_X+STUB_W/2, SF, N-STUB_D/2);}));
+  // Stub windows (2nd floor - east face)
+  groups.second.add(box(0.5,4,3,windowMat).tap(function(m){m.position.set(E_X+STUB_W+0.3, SF+6, N-STUB_D*0.3);}));
+  groups.second.add(box(0.5,4,3,windowMat).tap(function(m){m.position.set(E_X+STUB_W+0.3, SF+6, N-STUB_D*0.7);}));
+  scene.add(groups.second);
+
+  // ── ROOF (simple gable over main block + shed over stub) ──
+  groups.roof = new THREE.Group();
+  var roofH = ROOF_PEAK - CEIL2;
+  var ov = 2;
+  var slopeW = HW/2 + ov;
+  var slopeLen = Math.sqrt(slopeW*slopeW + roofH*roofH);
+  var slopeAngle = Math.atan2(roofH, slopeW);
+  var wsGeo = new THREE.BoxGeometry(slopeLen, 0.3, HD + ov*2);
+  var wsMesh = new THREE.Mesh(wsGeo, roofMat);
+  wsMesh.position.set(-slopeW/2, CEIL2 + roofH/2, 0);
+  wsMesh.rotation.z = slopeAngle; wsMesh.castShadow = true;
+  groups.roof.add(wsMesh);
+  var esMesh = new THREE.Mesh(wsGeo, roofMat);
+  esMesh.position.set(slopeW/2, CEIL2 + roofH/2, 0);
+  esMesh.rotation.z = -slopeAngle; esMesh.castShadow = true;
+  groups.roof.add(esMesh);
+  var gShape = new THREE.Shape();
+  gShape.moveTo(-slopeW, 0); gShape.lineTo(0, roofH); gShape.lineTo(slopeW, 0); gShape.closePath();
+  var gGeo = new THREE.ExtrudeGeometry(gShape, {depth:0.6, bevelEnabled:false});
+  groups.roof.add(new THREE.Mesh(gGeo, sidingMat).tap(function(m){m.position.set(0, CEIL2, S-ov);}));
+  groups.roof.add(new THREE.Mesh(gGeo, sidingMat).tap(function(m){m.position.set(0, CEIL2, N+ov-0.6);}));
+  groups.roof.add(box(0.4,0.5,HD+ov*2+2,mat(0x444444)).tap(function(m){m.position.set(0,ROOF_PEAK+0.1,0);}));
+  groups.roof.add(box(0.4,1.2,HD+ov*2,fasciaMat).tap(function(m){m.position.set(W_X-ov,CEIL2-0.6,0);}));
+  groups.roof.add(box(0.4,1.2,HD+ov*2,fasciaMat).tap(function(m){m.position.set(E_X+ov,CEIL2-0.6,0);}));
+  // Stub shed roof (slopes east from main wall)
+  groups.roof.add(box(STUB_W+2, 0.3, STUB_D+2, roofMat).tap(function(m){m.position.set(E_X+STUB_W/2, CEIL2-0.5, N-STUB_D/2); m.rotation.z=-0.08;}));
+  groups.roof.add(box(0.3, 0.6, STUB_D+2, fasciaMat).tap(function(m){m.position.set(E_X+STUB_W+1, CEIL2-1.2, N-STUB_D/2);}));
+  scene.add(groups.roof);
+
+  // ── TWO-STORY FRONT PORCH (per reference rendering) ──
+  groups.porch = new THREE.Group();
+  var fpD = PORCH_D;
+  var fpZ = S - fpD;
+  var foundMat = mat(0xa0a0a0); // concrete/masonry foundation
+
+  // Porch extends 5' past the right column for stair landing
+  var porchExt = 5;
+  var porchW = HW + porchExt; // total porch width
+  var porchCX = porchExt/2;   // shift center to account for extension
+
+  // Foundation base (solid masonry wall below 1st floor porch)
+  groups.porch.add(box(porchW, FF, fpD, foundMat).tap(function(m){m.position.set(porchCX, FF/2, S-fpD/2);}));
+
+  // 1st floor porch deck
+  groups.porch.add(box(porchW+1, 0.5, fpD, deckMat).tap(function(m){m.position.set(porchCX, FF-0.25, S-fpD/2);}));
+
+  // 1st floor porch ceiling / 2nd floor balcony underside
+  groups.porch.add(box(HW+2, 0.4, fpD+1, mat(0xc8d8e0)).tap(function(m){m.position.set(0, SF-0.5, S-fpD/2);}));
+  // Trim band between 1st and 2nd floor
+  groups.porch.add(box(HW+2.5, 0.8, 0.4, trimMat).tap(function(m){m.position.set(0, SF-0.1, fpZ-0.2);}));
+  groups.porch.add(box(0.4, 0.8, fpD+1, trimMat).tap(function(m){m.position.set(W_X-1.2, SF-0.1, S-fpD/2);}));
+  groups.porch.add(box(0.4, 0.8, fpD+1, trimMat).tap(function(m){m.position.set(E_X+1.2, SF-0.1, S-fpD/2);}));
+
+  // 4 round columns (per photo + reference - full two stories)
+  [-12,-4,4,12].forEach(function(x){
+    // 1st floor column (porch deck to 2nd floor)
+    var c1g = new THREE.CylinderGeometry(0.55, 0.65, SF-FF-1, 12);
+    var c1m = new THREE.Mesh(c1g, colMat);
+    c1m.position.set(x, FF+(SF-FF-1)/2+0.5, fpZ+1.2); c1m.castShadow = true;
+    groups.porch.add(c1m);
+    // 2nd floor column (balcony to porch roof)
+    var c2g = new THREE.CylinderGeometry(0.5, 0.6, CEIL2-SF-1.5, 12);
+    var c2m = new THREE.Mesh(c2g, colMat);
+    c2m.position.set(x, SF+(CEIL2-SF-1.5)/2+0.5, fpZ+1.2); c2m.castShadow = true;
+    groups.porch.add(c2m);
+    // Column bases (square plinths)
+    groups.porch.add(box(1.5,0.8,1.5,colMat).tap(function(m){m.position.set(x,FF+0.4,fpZ+1.2);}));
+    groups.porch.add(box(1.5,0.8,1.5,colMat).tap(function(m){m.position.set(x,SF+0.4,fpZ+1.2);}));
+    // Column capitals
+    groups.porch.add(box(1.6,0.5,1.6,colMat).tap(function(m){m.position.set(x,SF-0.75,fpZ+1.2);}));
+    groups.porch.add(box(1.6,0.5,1.6,colMat).tap(function(m){m.position.set(x,CEIL2-1.5,fpZ+1.2);}));
+  });
+
+  // 1st floor railing (at front of porch, with gap for stair opening)
+  var railLeft = W_X + 0.5;
+  var railRight = E_X + porchExt - 0.5;
+  var stairOpenL = stX - stW/2 - 0.5; // left edge of stair opening
+  var stairOpenR = stX + stW/2 + 0.5; // right edge of stair opening
+  var leftRailW = stairOpenL - railLeft;  // railing left of stairs
+  var rightRailW = railRight - stairOpenR; // railing right of stairs
+  // Left section of front railing (from left edge to stair opening)
+  if (leftRailW > 0) {
+    var lCx = (railLeft + stairOpenL) / 2;
+    groups.porch.add(box(leftRailW,0.4,0.4,trimMat).tap(function(m){m.position.set(lCx,FF+3.2,fpZ+0.5);}));
+    groups.porch.add(box(leftRailW,0.3,0.3,trimMat).tap(function(m){m.position.set(lCx,FF+0.5,fpZ+0.5);}));
+    for(var ri=railLeft;ri<=stairOpenL;ri+=0.8) groups.porch.add(box(0.1,2.7,0.1,darkRailMat).tap(function(m){m.position.set(ri,FF+1.85,fpZ+0.5);}));
+  }
+  // Right section of front railing (from stair opening to right edge)
+  if (rightRailW > 0) {
+    var rCx = (stairOpenR + railRight) / 2;
+    groups.porch.add(box(rightRailW,0.4,0.4,trimMat).tap(function(m){m.position.set(rCx,FF+3.2,fpZ+0.5);}));
+    groups.porch.add(box(rightRailW,0.3,0.3,trimMat).tap(function(m){m.position.set(rCx,FF+0.5,fpZ+0.5);}));
+    for(var ri2=stairOpenR;ri2<=railRight;ri2+=0.8) groups.porch.add(box(0.1,2.7,0.1,darkRailMat).tap(function(m){m.position.set(ri2,FF+1.85,fpZ+0.5);}));
+  }
+  // Side railings (left side + right side at extended edge)
+  [railLeft, railRight].forEach(function(x){
+    groups.porch.add(box(0.4,0.4,fpD-2,trimMat).tap(function(m){m.position.set(x,FF+3.2,S-fpD/2);}));
+    groups.porch.add(box(0.3,0.3,fpD-2,trimMat).tap(function(m){m.position.set(x,FF+0.5,S-fpD/2);}));
+    for(var sj=S-1;sj>=fpZ+1;sj-=0.8) groups.porch.add(box(0.1,2.7,0.1,darkRailMat).tap(function(m){m.position.set(x,FF+1.85,sj);}));
+  });
+
+  // Lower porch railing between columns (left railing to stair opening)
+  // Columns at x = -12, -4, 4, 12. Railing between each pair along the front edge.
+  var colPos = [-12, -4, 4, 12];
+  // Add railing from left side rail to first column
+  var segments = [[railLeft, colPos[0]]];
+  // Add railing between each pair of columns
+  for (var ci = 0; ci < colPos.length - 1; ci++) {
+    segments.push([colPos[ci], colPos[ci+1]]);
+  }
+  // Add railing from last column to stair opening
+  segments.push([colPos[colPos.length-1], stairOpenL]);
+
+  segments.forEach(function(seg) {
+    var segLeft = seg[0] + 0.8; // offset from column center
+    var segRight = seg[1] - 0.8;
+    var segW = segRight - segLeft;
+    if (segW < 1) return; // skip if too small
+    var segCx = (segLeft + segRight) / 2;
+    var railFrontZ = fpZ + 1.2; // at column line
+    // Top rail
+    groups.porch.add(box(segW, 0.4, 0.4, trimMat).tap(function(m){m.position.set(segCx, FF+3.2, railFrontZ);}));
+    // Bottom rail
+    groups.porch.add(box(segW, 0.3, 0.3, trimMat).tap(function(m){m.position.set(segCx, FF+0.5, railFrontZ);}));
+    // Spindles
+    for (var sp = segLeft + 0.4; sp <= segRight - 0.2; sp += 0.8) {
+      groups.porch.add(box(0.1, 2.7, 0.1, darkRailMat).tap(function(m){m.position.set(sp, FF+1.85, railFrontZ);}));
+    }
+  });
+
+  // 2nd floor balcony deck
+  groups.porch.add(box(HW+1, 0.4, fpD, deckMat).tap(function(m){m.position.set(0, SF-0.2, S-fpD/2);}));
+  // 2nd floor railing (dark spindles)
+  groups.porch.add(box(HW-2,0.4,0.4,trimMat).tap(function(m){m.position.set(0,SF+3.2,fpZ+0.5);}));
+  groups.porch.add(box(HW-2,0.3,0.3,trimMat).tap(function(m){m.position.set(0,SF+0.5,fpZ+0.5);}));
+  for(var r2=-13;r2<=13;r2+=0.8) groups.porch.add(box(0.1,2.7,0.1,darkRailMat).tap(function(m){m.position.set(r2,SF+1.85,fpZ+0.5);}));
+  [W_X+0.5, E_X-0.5].forEach(function(x){
+    groups.porch.add(box(0.4,0.4,fpD-2,trimMat).tap(function(m){m.position.set(x,SF+3.2,S-fpD/2);}));
+    groups.porch.add(box(0.3,0.3,fpD-2,trimMat).tap(function(m){m.position.set(x,SF+0.5,S-fpD/2);}));
+    for(var s2j=S-1;s2j>=fpZ+1;s2j-=0.8) groups.porch.add(box(0.1,2.7,0.1,darkRailMat).tap(function(m){m.position.set(x,SF+1.85,s2j);}));
+  });
+
+  // Porch roof with entablature/cornice (layered trim per reference)
+  // Roof slab
+  groups.porch.add(box(HW+3, 0.4, fpD+2, roofMat).tap(function(m){m.position.set(0,CEIL2-0.5,S-fpD/2); m.rotation.x=0.05;}));
+  // Cornice / entablature (3-layer trim band)
+  groups.porch.add(box(HW+3.5, 0.6, 0.6, trimMat).tap(function(m){m.position.set(0,CEIL2-0.8,fpZ-0.8);})); // top molding
+  groups.porch.add(box(HW+3, 1.0, 0.4, trimMat).tap(function(m){m.position.set(0,CEIL2-1.5,fpZ-0.6);}));   // frieze
+  groups.porch.add(box(HW+3.5, 0.4, 0.5, trimMat).tap(function(m){m.position.set(0,CEIL2-2.2,fpZ-0.7);})); // architrave
+  // Side cornice returns
+  [W_X-1.5, E_X+1.5].forEach(function(x){
+    groups.porch.add(box(0.6, 0.6, fpD+2, trimMat).tap(function(m){m.position.set(x,CEIL2-0.8,S-fpD/2);}));
+    groups.porch.add(box(0.4, 1.0, fpD+1.5, trimMat).tap(function(m){m.position.set(x,CEIL2-1.5,S-fpD/2);}));
+  });
+  // Porch ceiling
+  groups.porch.add(box(HW+2,0.3,fpD+1,mat(0xc8d8e0)).tap(function(m){m.position.set(0,CEIL2-2.5,S-fpD/2);}));
+
+  // Front stairs (right side, perpendicular to front face)
+  // Stairs go straight out from porch toward the street
+  var stW = 5;     // stair width (along front face / X axis)
+  var stX = E_X + porchExt/2; // right side, on the extended porch area
+  var numSt = 7;
+  var stepD = 1;   // tread depth (Z)
+  var stepH = FF / numSt;
+
+  // Landing at porch level (connects stairs to porch)
+  groups.porch.add(box(stW+1, 0.5, 3, deckMat).tap(function(m){m.position.set(stX, FF-0.25, fpZ-1.5);}));
+
+  // Stair treads (going away from house, perpendicular to front face)
+  for (var fs = 0; fs < numSt; fs++) {
+    groups.porch.add(box(stW, 0.6, stepD, stairMat).tap(function(m){
+      m.position.set(stX, FF - 0.3 - fs * stepH, fpZ - 3 - fs * stepD);
+      m.castShadow = true;
+    }));
+  }
+
+  // Stair railings (individual segments connecting spindle tops, following stair slope)
+  var stairRunZ = numSt * stepD;
+  var topZ = fpZ - 3;                 // top of stairs Z
+  var botZ = fpZ - 3 - stairRunZ;     // bottom of stairs Z
+  var topY = FF;                       // top of stairs Y
+  var botY = FF - numSt * stepH;       // bottom of stairs Y
+
+  [stX - stW/2 - 0.2, stX + stW/2 + 0.2].forEach(function(rx) {
+    // Newel post at top
+    groups.porch.add(box(0.5, 3.5, 0.5, trimMat).tap(function(m){m.position.set(rx, topY + 1.75, topZ);}));
+    // Newel post at bottom
+    groups.porch.add(box(0.5, 3.5, 0.5, trimMat).tap(function(m){m.position.set(rx, botY + 1.75, botZ);}));
+
+    // Spindles at each step + rail segments between them
+    for (var si = 0; si <= numSt; si++) {
+      var spZ = topZ - si * stepD;
+      var spY = topY - si * stepH;
+      var spH = 2.7;
+      // Spindle
+      groups.porch.add(box(0.1, spH, 0.1, darkRailMat).tap(function(m){m.position.set(rx, spY + spH/2, spZ);}));
+
+      // Rail segment from this spindle to next (top rail)
+      if (si < numSt) {
+        var nZ = topZ - (si+1) * stepD;
+        var nY = topY - (si+1) * stepH;
+        var segLen = Math.sqrt(stepD*stepD + stepH*stepH);
+        var segAngle = -Math.atan2(stepH, stepD);
+        var seg = box(0.3, 0.3, segLen, trimMat);
+        seg.position.set(rx, (spY + nY)/2 + spH, (spZ + nZ)/2);
+        seg.rotation.x = segAngle;
+        groups.porch.add(seg);
+      }
+    }
+  });
+
+  scene.add(groups.porch);
+
+  // ── IDA DAMAGE OVERLAYS ──
+  function idaMat(op){return new THREE.MeshLambertMaterial({color:COL_IDA,transparent:true,opacity:op||0.35});}
+  var ida1=box(HW+1,SF-FF,0.3,idaMat(0.4)); ida1.position.set(0,FF+(SF-FF)/2,N+0.5); ida1.visible=false; idaOverlays.push(ida1); scene.add(ida1);
+  var ida2=box(HW+2,3,HD*0.3,idaMat(0.3)); ida2.position.set(0,FF-1.5,N-HD*0.15); ida2.visible=false; idaOverlays.push(ida2); scene.add(ida2);
+  var ida3=box(0.3,CEIL2-FF,HD*0.6,idaMat(0.3)); ida3.position.set(W_X-0.5,FF+(CEIL2-FF)/2,0); ida3.visible=false; idaOverlays.push(ida3); scene.add(ida3);
+  var ida4=box(0.3,CEIL2-FF,HD*0.6,idaMat(0.3)); ida4.position.set(E_X+0.5,FF+(CEIL2-FF)/2,0); ida4.visible=false; idaOverlays.push(ida4); scene.add(ida4);
+  var ida5=box(HW-2,0.3,HD*0.7,idaMat(0.3)); ida5.position.set(0,FF+0.5,0); ida5.visible=false; idaOverlays.push(ida5); scene.add(ida5);
+}
+function animate() {
+  requestAnimationFrame(animate);
+  if (controls) controls.update();
+  if (renderer && scene && camera) renderer.render(scene, camera);
+}
+
+// View presets
+window.setDTView = function(view) {
+  document.querySelectorAll('#tab-digitaltwin .tool-btn').forEach(function(b) { b.classList.remove('active'); });
+  var btn = document.getElementById('dt' + view.charAt(0).toUpperCase() + view.slice(1));
+  if (btn) btn.classList.add('active');
+  if (!camera || !controls) return;
+  var t = { x: 0, y: 15, z: 0 };
+  var p;
+  switch(view) {
+    case 'front': p = { x: 0, y: 20, z: -100 }; break;
+    case 'rear':  p = { x: 0, y: 20, z: 100 }; break;
+    case 'left':  p = { x: -100, y: 20, z: 0 }; break;
+    case 'right': p = { x: 100, y: 20, z: 0 }; break;
+    case 'top':   p = { x: 0, y: 100, z: 1 }; break;
+    default:      p = { x: 60, y: 40, z: 80 }; break;
+  }
+  camera.position.set(p.x, p.y, p.z);
+  controls.target.set(t.x, t.y, t.z);
+  controls.update();
+};
+
+window.toggleFloorVis = function(key, visible) {
+  if (groups[key]) groups[key].visible = visible;
+};
+
+var photoSprites = [];
+
+window.toggleIdaHighlight = function() {
+  isIdaShown = !isIdaShown;
+  var btn = document.getElementById('dtShowIda');
+  if (btn) { btn.classList.toggle('active', isIdaShown); }
+
+  // Remove existing photo sprites
+  photoSprites.forEach(function(s) { scene.remove(s); });
+  photoSprites = [];
+
+  if (!isIdaShown) {
+    idaOverlays.forEach(function(o) { o.visible = false; });
+    return;
+  }
+
+  // Show the ida overlays
+  idaOverlays.forEach(function(o) { o.visible = true; });
+
+  // Get photo pins from localStorage
+  var pins = JSON.parse(localStorage.getItem('ida_photo_pins') || '[]');
+  var lib = JSON.parse(localStorage.getItem('ida_photo_library') || '[]');
+
+  // House dimensions for mapping
+  var HW = 30, HD = 60, FF = 7, SF = 21, C2 = 33;
+  var S = -HD/2, N = HD/2, WX = -HW/2, EX = HW/2;
+
+  // Floor Y heights (center of each floor)
+  var floorY = {
+    'first': FF + (SF - FF) / 2,
+    'second': SF + (C2 - SF) / 2,
+    'basement': FF / 2
+  };
+
+  pins.forEach(function(pin, idx) {
+    if (!pin.photoId) return;
+    var photo = lib.find(function(p) { return p.id === pin.photoId; });
+    if (!photo) return;
+
+    // Map pctX/pctY to 3D coordinates
+    // The floor plan image has the house roughly centered with margins.
+    // Approximate mapping: the house occupies about 20-80% of X and 5-90% of Y in the image.
+    // pctX: image left to right -> house west to east (X axis)
+    // pctY: image top to bottom -> house north(rear) to south(front) (Z axis, inverted)
+    var houseMinX = 15, houseMaxX = 75; // approx % range house occupies in image X
+    var houseMinY = 5, houseMaxY = 88;  // approx % range house occupies in image Y
+    var normX = (pin.pctX - houseMinX) / (houseMaxX - houseMinX); // 0-1 within house
+    var normY = (pin.pctY - houseMinY) / (houseMaxY - houseMinY); // 0-1 within house
+    normX = Math.max(0, Math.min(1, normX));
+    normY = Math.max(0, Math.min(1, normY));
+    var x3d = WX + normX * HW;
+    var z3d = N - normY * HD; // top of image = north = +Z, bottom = south = -Z
+    var y3d = floorY[pin.floor] || floorY.first;
+
+    // Create a sprite with the photo texture
+    var canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 128;
+    var ctx = canvas.getContext('2d');
+
+    // Draw photo into canvas
+    var img = new Image();
+    img.onload = function() {
+      // Red border
+      ctx.fillStyle = '#ff6f61';
+      ctx.fillRect(0, 0, 128, 128);
+      // Photo (inset)
+      ctx.drawImage(img, 4, 4, 120, 108);
+      // Pin number label
+      ctx.fillStyle = '#ff6f61';
+      ctx.fillRect(0, 112, 128, 16);
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 11px Arial';
+      ctx.textAlign = 'center';
+      var label = '#' + (idx + 1);
+      if (pin.roomName) label += ' ' + pin.roomName;
+      else if (pin.desc) label += ' ' + pin.desc.substring(0, 15);
+      ctx.fillText(label, 64, 124);
+
+      var tex = new THREE.CanvasTexture(canvas);
+      var spriteMat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+      var sprite = new THREE.Sprite(spriteMat);
+      sprite.position.set(x3d, y3d + 3, z3d);
+      sprite.scale.set(6, 6, 1);
+
+      // Add a line from sprite down to floor
+      var lineGeo = new THREE.BufferGeometry();
+      lineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([
+        x3d, y3d + 0.5, z3d,
+        x3d, y3d + 3, z3d
+      ]), 3));
+      var lineMat = new THREE.LineBasicMaterial({ color: 0xff6f61, linewidth: 2 });
+      var line = new THREE.Line(lineGeo, lineMat);
+
+      // Pin dot on the floor
+      var dotGeo = new THREE.SphereGeometry(0.5, 8, 8);
+      var dotMat = new THREE.MeshLambertMaterial({ color: 0xff6f61 });
+      var dot = new THREE.Mesh(dotGeo, dotMat);
+      dot.position.set(x3d, y3d + 0.5, z3d);
+
+      scene.add(sprite);
+      scene.add(line);
+      scene.add(dot);
+      photoSprites.push(sprite);
+      photoSprites.push(line);
+      photoSprites.push(dot);
+    };
+    img.src = photo.data;
+  });
+};
+
+// Initialize when tab is shown
+var dtObserver = new MutationObserver(function() {
+  var tab = document.getElementById('tab-digitaltwin');
+  if (tab && tab.classList.contains('active')) {
+    initDigitalTwin();
+  }
+});
+dtObserver.observe(document.getElementById('tab-digitaltwin'), { attributes: true, attributeFilter: ['class'] });
+
+// ==================== WIND FORCES 3D SCENE ====================
+var wScene, wCamera, wRenderer, wControls, wAnimId;
+var windAnimating = false;
+var windAnimTime = 0;
+var windHouseParts = [];   // house meshes that rack
+var windArrows = [];       // arrows that move
+var windOrigPositions = []; // original positions for reset
+
+function initWindForces() {
+  var container = document.getElementById('windCanvas');
+  if (!container || container.childElementCount > 0) return;
+
+  wScene = new THREE.Scene();
+  wScene.background = new THREE.Color(0xd0dce4);
+  wScene.fog = new THREE.Fog(0xd0dce4, 120, 350);
+
+  wCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+  wCamera.position.set(65, 40, -50); // pulled back and centered
+
+  wRenderer = new THREE.WebGLRenderer({ antialias: true });
+  wRenderer.setSize(container.clientWidth, container.clientHeight);
+  wRenderer.setPixelRatio(window.devicePixelRatio);
+  wRenderer.shadowMap.enabled = true;
+  container.appendChild(wRenderer.domElement);
+
+  wControls = new OrbitControls(wCamera, wRenderer.domElement);
+  wControls.target.set(0, 15, 0);
+  wControls.enableDamping = true;
+  wControls.update();
+
+  // Lighting (stormy)
+  wScene.add(new THREE.AmbientLight(0x8899aa, 0.6));
+  var storm = new THREE.DirectionalLight(0xccccdd, 0.8);
+  storm.position.set(-20, 40, -30);
+  storm.castShadow = true;
+  storm.shadow.mapSize.width = 2048;
+  storm.shadow.mapSize.height = 2048;
+  storm.shadow.camera.near = 1; storm.shadow.camera.far = 200;
+  storm.shadow.camera.left = -60; storm.shadow.camera.right = 60;
+  storm.shadow.camera.top = 60; storm.shadow.camera.bottom = -60;
+  wScene.add(storm);
+
+  // Ground
+  var gnd = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), new THREE.MeshLambertMaterial({color: 0x4a6a3a}));
+  gnd.rotation.x = -Math.PI/2; gnd.position.y = -0.1; gnd.receiveShadow = true;
+  wScene.add(gnd);
+
+  // Build full house model (same as Digital Twin) into wind scene
+  var siding = new THREE.MeshLambertMaterial({color: 0x8fb0be});
+  var roofM = new THREE.MeshLambertMaterial({color: 0x5a5a5a});
+  var found = new THREE.MeshLambertMaterial({color: 0xa0a0a0});
+  var trimM = new THREE.MeshLambertMaterial({color: 0xf0f0f0});
+  var winM = new THREE.MeshLambertMaterial({color: 0x1a3040});
+  var doorM = new THREE.MeshLambertMaterial({color: 0x6b1a1a});
+  var deckM = new THREE.MeshLambertMaterial({color: 0x8a8a8a});
+  var colM = new THREE.MeshLambertMaterial({color: 0xffffff});
+  var flrM = new THREE.MeshLambertMaterial({color: 0xb8a88a});
+  var drkRail = new THREE.MeshLambertMaterial({color: 0x333333});
+
+  function b(w,h,d,m){var g=new THREE.BoxGeometry(w,h,d);var mesh=new THREE.Mesh(g,m);mesh.castShadow=true;mesh.receiveShadow=true;return mesh;}
+
+  var HW=30, HD=60, FF=7, SF=21, C2=33, RP=41;
+  var S=-HD/2, N=HD/2, WX=-HW/2, EX=HW/2, CW=0;
+  var STUB_W=4, STUB_D=10, BAY_P=3, BAY_W=10;
+  var WBAY_Z=-5, EBAY_Z=-3;
+  var wT=0.8;
+
+  // House group (everything above foundation that racks)
+  var houseGroup = new THREE.Group();
+
+  // Foundation (stays fixed)
+  var fnd=b(HW,FF,HD,found); fnd.position.set(0,FF/2,0); wScene.add(fnd);
+  var fnd2=b(STUB_W,FF,STUB_D,found); fnd2.position.set(EX+STUB_W/2,FF/2,N-STUB_D/2); wScene.add(fnd2);
+  // Porch foundation
+  var fpD=8;
+  var pFnd=b(HW+5,FF,fpD,found); pFnd.position.set(2.5,FF/2,S-fpD/2); wScene.add(pFnd);
+
+  // Floor slabs
+  houseGroup.add(b(HW,0.5,HD,flrM).tap(function(m){m.position.set(0,FF,0);}));
+  houseGroup.add(b(HW,0.5,HD,flrM).tap(function(m){m.position.set(0,SF,0);}));
+
+  // Walls helper
+  function addWalls(yB,yT){
+    var h=yT-yB, cy=yB+h/2;
+    // West wall (split for bay)
+    houseGroup.add(b(wT,h,WBAY_Z-BAY_W/2-S,siding).tap(function(m){m.position.set(WX,cy,(S+WBAY_Z-BAY_W/2)/2);}));
+    houseGroup.add(b(wT,h,N-(WBAY_Z+BAY_W/2),siding).tap(function(m){m.position.set(WX,cy,(WBAY_Z+BAY_W/2+N)/2);}));
+    // East wall (split for bay)
+    houseGroup.add(b(wT,h,EBAY_Z-BAY_W/2-S,siding).tap(function(m){m.position.set(EX,cy,(S+EBAY_Z-BAY_W/2)/2);}));
+    houseGroup.add(b(wT,h,N-(EBAY_Z+BAY_W/2),siding).tap(function(m){m.position.set(EX,cy,(EBAY_Z+BAY_W/2+N)/2);}));
+    // South + North
+    houseGroup.add(b(HW,h,wT,siding).tap(function(m){m.position.set(0,cy,S);}));
+    houseGroup.add(b(HW,h,wT,siding).tap(function(m){m.position.set(0,cy,N);}));
+    // Center wall
+    houseGroup.add(b(wT,h,HD,new THREE.MeshLambertMaterial({color:0xb0a888})).tap(function(m){m.position.set(CW,cy,0);}));
+    // Stub walls
+    houseGroup.add(b(wT,h,STUB_D,siding).tap(function(m){m.position.set(EX+STUB_W,cy,N-STUB_D/2);}));
+    houseGroup.add(b(STUB_W,h,wT,siding).tap(function(m){m.position.set(EX+STUB_W/2,cy,N-STUB_D);}));
+    houseGroup.add(b(STUB_W,h,wT,siding).tap(function(m){m.position.set(EX+STUB_W/2,cy,N);}));
+    // Bay windows (rectangular bump-outs)
+    [[-1,WX,WBAY_Z],[1,EX,EBAY_Z]].forEach(function(bay){
+      var dir=bay[0],xB=bay[1],zC=bay[2],px=xB+dir*BAY_P;
+      houseGroup.add(b(wT,h,BAY_W,siding).tap(function(m){m.position.set(px,cy,zC);}));
+      houseGroup.add(b(BAY_P,h,wT,siding).tap(function(m){m.position.set(xB+dir*BAY_P/2,cy,zC-BAY_W/2);}));
+      houseGroup.add(b(BAY_P,h,wT,siding).tap(function(m){m.position.set(xB+dir*BAY_P/2,cy,zC+BAY_W/2);}));
+      // Bay windows
+      houseGroup.add(b(0.3,h*0.45,BAY_W*0.35,winM).tap(function(m){m.position.set(px+dir*0.3,cy,zC-BAY_W*0.2);}));
+      houseGroup.add(b(0.3,h*0.45,BAY_W*0.35,winM).tap(function(m){m.position.set(px+dir*0.3,cy,zC+BAY_W*0.2);}));
+    });
+  }
+  addWalls(0,FF);    // foundation walls
+  addWalls(FF,SF);   // 1st floor
+  addWalls(SF,C2);   // 2nd floor
+
+  // Windows
+  [-25,8,20].forEach(function(z){
+    houseGroup.add(b(0.5,5,3,winM).tap(function(m){m.position.set(WX-0.3,FF+7,z);}));
+    houseGroup.add(b(0.5,5,3,winM).tap(function(m){m.position.set(WX-0.3,SF+6,z);}));
+  });
+  [-22,8,14].forEach(function(z){
+    houseGroup.add(b(0.5,5,3,winM).tap(function(m){m.position.set(EX+0.3,FF+7,z);}));
+    houseGroup.add(b(0.5,5,3,winM).tap(function(m){m.position.set(EX+0.3,SF+6,z);}));
+  });
+  // Front doors + windows
+  houseGroup.add(b(3.5,8,0.5,doorM).tap(function(m){m.position.set(-7,FF+4,S-0.3);}));
+  houseGroup.add(b(3.5,8,0.5,doorM).tap(function(m){m.position.set(7,FF+4,S-0.3);}));
+  [-12,12].forEach(function(x){
+    houseGroup.add(b(3,5,0.5,winM).tap(function(m){m.position.set(x,FF+7,S-0.3);}));
+  });
+  [-10,-3,5].forEach(function(x){
+    houseGroup.add(b(3,5,0.5,winM).tap(function(m){m.position.set(x,SF+6,S-0.3);}));
+  });
+
+  // Roof
+  var roofH=RP-C2, slopeW=HW/2+2;
+  var slopeLen=Math.sqrt(slopeW*slopeW+roofH*roofH);
+  var slopeAng=Math.atan2(roofH,slopeW);
+  var rg=new THREE.BoxGeometry(slopeLen,0.3,HD+4);
+  var rm1=new THREE.Mesh(rg,roofM); rm1.position.set(-slopeW/2,C2+roofH/2,0); rm1.rotation.z=slopeAng; rm1.castShadow=true;
+  var rm2=new THREE.Mesh(rg,roofM); rm2.position.set(slopeW/2,C2+roofH/2,0); rm2.rotation.z=-slopeAng; rm2.castShadow=true;
+  houseGroup.add(rm1); houseGroup.add(rm2);
+  // Gable triangles
+  var gS=new THREE.Shape(); gS.moveTo(-slopeW,0); gS.lineTo(0,roofH); gS.lineTo(slopeW,0); gS.closePath();
+  var gG=new THREE.ExtrudeGeometry(gS,{depth:0.6,bevelEnabled:false});
+  houseGroup.add(new THREE.Mesh(gG,siding).tap(function(m){m.position.set(0,C2,S-2);}));
+  houseGroup.add(new THREE.Mesh(gG,siding).tap(function(m){m.position.set(0,C2,N+1.4);}));
+  // Ridge + fascia
+  houseGroup.add(b(0.4,0.5,HD+6,new THREE.MeshLambertMaterial({color:0x444444})).tap(function(m){m.position.set(0,RP+0.1,0);}));
+  houseGroup.add(b(0.4,1.2,HD+4,trimM).tap(function(m){m.position.set(WX-2,C2-0.6,0);}));
+  houseGroup.add(b(0.4,1.2,HD+4,trimM).tap(function(m){m.position.set(EX+2,C2-0.6,0);}));
+  // Stub roof
+  houseGroup.add(b(STUB_W+2,0.3,STUB_D+2,roofM).tap(function(m){m.position.set(EX+STUB_W/2,C2-0.5,N-STUB_D/2); m.rotation.z=-0.08;}));
+
+  // Two-story porch
+  var fpZ=S-fpD;
+  houseGroup.add(b(HW+5,0.5,fpD,deckM).tap(function(m){m.position.set(2.5,FF-0.25,S-fpD/2);}));
+  houseGroup.add(b(HW+6,0.4,fpD+1,new THREE.MeshLambertMaterial({color:0xc8d8e0})).tap(function(m){m.position.set(2.5,SF-0.5,S-fpD/2);}));
+  houseGroup.add(b(HW+5,0.4,fpD,deckM).tap(function(m){m.position.set(2.5,SF-0.2,S-fpD/2);}));
+  // Columns
+  [-12,-4,4,12].forEach(function(x){
+    var cg1=new THREE.CylinderGeometry(0.55,0.65,SF-FF-1,12);
+    var cm1=new THREE.Mesh(cg1,colM); cm1.position.set(x,FF+(SF-FF-1)/2+0.5,fpZ+1.2); cm1.castShadow=true; houseGroup.add(cm1);
+    var cg2=new THREE.CylinderGeometry(0.5,0.6,C2-SF-1.5,12);
+    var cm2=new THREE.Mesh(cg2,colM); cm2.position.set(x,SF+(C2-SF-1.5)/2+0.5,fpZ+1.2); cm2.castShadow=true; houseGroup.add(cm2);
+    houseGroup.add(b(1.5,0.8,1.5,colM).tap(function(m){m.position.set(x,FF+0.4,fpZ+1.2);}));
+    houseGroup.add(b(1.5,0.8,1.5,colM).tap(function(m){m.position.set(x,SF+0.4,fpZ+1.2);}));
+  });
+  // Porch railings (simplified for wind scene)
+  [FF,SF].forEach(function(flr){
+    houseGroup.add(b(HW+3,0.4,0.4,trimM).tap(function(m){m.position.set(2,flr+3.2,fpZ+0.5);}));
+    for(var sp=-13;sp<=16;sp+=0.8) houseGroup.add(b(0.1,2.7,0.1,drkRail).tap(function(m){m.position.set(sp,flr+1.85,fpZ+0.5);}));
+  });
+  // Porch roof + cornice
+  houseGroup.add(b(HW+7,0.4,fpD+2,roofM).tap(function(m){m.position.set(2.5,C2-0.5,S-fpD/2); m.rotation.x=0.05;}));
+  houseGroup.add(b(HW+7,0.6,0.6,trimM).tap(function(m){m.position.set(2.5,C2-0.8,fpZ-0.8);}));
+  houseGroup.add(b(HW+7,1.0,0.4,trimM).tap(function(m){m.position.set(2.5,C2-1.5,fpZ-0.6);}));
+
+  wScene.add(houseGroup);
+
+  // Track the house group for racking animation
+  windHouseParts = [houseGroup];
+  windOrigPositions = [{ px:0, py:0, pz:0, rx:0, ry:0, rz:0 }];
+
+  // ── SEPARATION / STRESS INDICATORS (bright red lines at seams/corners) ──
+  // These highlight where siding separates and corner seams open during racking
+  var stressMat = new THREE.MeshLambertMaterial({color: 0xff0000, transparent: true, opacity: 0});
+  var stressGlow = new THREE.MeshLambertMaterial({color: 0xff2200, transparent: true, opacity: 0, emissive: 0xff0000, emissiveIntensity: 0.5});
+  var stressMarkers = [];
+
+  // Vertical corner seams - ALL corners of the house
+  // Main house corners (4 corners)
+  stressMarkers.push(b(0.4, C2, 0.4, stressGlow).tap(function(m){m.position.set(EX, C2/2, N);}));   // back-right
+  stressMarkers.push(b(0.4, C2, 0.4, stressGlow).tap(function(m){m.position.set(EX, C2/2, S);}));   // front-right
+  stressMarkers.push(b(0.4, C2, 0.4, stressMat).tap(function(m){m.position.set(WX, C2/2, N);}));    // back-left
+  stressMarkers.push(b(0.4, C2, 0.4, stressMat).tap(function(m){m.position.set(WX, C2/2, S);}));    // front-left
+  // Stub corners (5 corners - highest stress at wind trap)
+  stressMarkers.push(b(0.4, C2, 0.4, stressGlow).tap(function(m){m.position.set(EX+STUB_W, C2/2, N-STUB_D);}));
+  stressMarkers.push(b(0.4, C2, 0.4, stressGlow).tap(function(m){m.position.set(EX+STUB_W, C2/2, N);}));
+  stressMarkers.push(b(0.4, C2, 0.4, stressGlow).tap(function(m){m.position.set(EX, C2/2, N-STUB_D);}));
+  // East bay window corners (4 corners)
+  stressMarkers.push(b(0.4, C2, 0.4, stressMat).tap(function(m){m.position.set(EX+BAY_P, C2/2, EBAY_Z-BAY_W/2);}));
+  stressMarkers.push(b(0.4, C2, 0.4, stressMat).tap(function(m){m.position.set(EX+BAY_P, C2/2, EBAY_Z+BAY_W/2);}));
+  stressMarkers.push(b(0.4, C2, 0.4, stressMat).tap(function(m){m.position.set(EX, C2/2, EBAY_Z-BAY_W/2);}));
+  stressMarkers.push(b(0.4, C2, 0.4, stressMat).tap(function(m){m.position.set(EX, C2/2, EBAY_Z+BAY_W/2);}));
+  // West bay window corners (4 corners)
+  stressMarkers.push(b(0.4, C2, 0.4, stressMat).tap(function(m){m.position.set(WX-BAY_P, C2/2, WBAY_Z-BAY_W/2);}));
+  stressMarkers.push(b(0.4, C2, 0.4, stressMat).tap(function(m){m.position.set(WX-BAY_P, C2/2, WBAY_Z+BAY_W/2);}));
+  stressMarkers.push(b(0.4, C2, 0.4, stressMat).tap(function(m){m.position.set(WX, C2/2, WBAY_Z-BAY_W/2);}));
+  stressMarkers.push(b(0.4, C2, 0.4, stressMat).tap(function(m){m.position.set(WX, C2/2, WBAY_Z+BAY_W/2);}));
+
+  // Window vertical side stress lines (both floors)
+  // West wall windows
+  [-25,8,20].forEach(function(z){
+    [FF,SF].forEach(function(flr){
+      var wh=5, wy=flr+7;
+      if(flr===SF) { wh=5; wy=flr+6; }
+      stressMarkers.push(b(0.2, wh, 0.2, stressMat).tap(function(m){m.position.set(WX-0.4, wy, z-1.5);}));
+      stressMarkers.push(b(0.2, wh, 0.2, stressMat).tap(function(m){m.position.set(WX-0.4, wy, z+1.5);}));
+    });
+  });
+  // East wall windows
+  [-22,8,14].forEach(function(z){
+    [FF,SF].forEach(function(flr){
+      var wh=5, wy=flr+7;
+      if(flr===SF) { wh=5; wy=flr+6; }
+      stressMarkers.push(b(0.2, wh, 0.2, stressGlow).tap(function(m){m.position.set(EX+0.4, wy, z-1.5);}));
+      stressMarkers.push(b(0.2, wh, 0.2, stressGlow).tap(function(m){m.position.set(EX+0.4, wy, z+1.5);}));
+    });
+  });
+  // Front wall windows (1st floor flanking doors)
+  [-12,12].forEach(function(x){
+    stressMarkers.push(b(0.2, 5, 0.2, stressMat).tap(function(m){m.position.set(x-1.5, FF+7, S-0.4);}));
+    stressMarkers.push(b(0.2, 5, 0.2, stressMat).tap(function(m){m.position.set(x+1.5, FF+7, S-0.4);}));
+  });
+  // Front wall windows (2nd floor)
+  [-10,-3,5].forEach(function(x){
+    stressMarkers.push(b(0.2, 5, 0.2, stressMat).tap(function(m){m.position.set(x-1.5, SF+6, S-0.4);}));
+    stressMarkers.push(b(0.2, 5, 0.2, stressMat).tap(function(m){m.position.set(x+1.5, SF+6, S-0.4);}));
+  });
+  // Front door sides
+  [-7,7].forEach(function(x){
+    stressMarkers.push(b(0.2, 8, 0.2, stressMat).tap(function(m){m.position.set(x-1.75, FF+4, S-0.4);}));
+    stressMarkers.push(b(0.2, 8, 0.2, stressMat).tap(function(m){m.position.set(x+1.75, FF+4, S-0.4);}));
+  });
+
+  // Horizontal seam separations along rear wall (siding pulling apart)
+  stressMarkers.push(b(HW+1, 0.3, 0.3, stressGlow).tap(function(m){m.position.set(0, SF, N+0.3);}));   // 2nd floor line rear
+  stressMarkers.push(b(HW+1, 0.3, 0.3, stressMat).tap(function(m){m.position.set(0, C2*0.7, N+0.3);})); // mid-wall rear
+  stressMarkers.push(b(HW+1, 0.3, 0.3, stressMat).tap(function(m){m.position.set(0, FF, N+0.3);}));     // 1st floor line rear
+
+  // Horizontal seams on east wall (wind-facing, siding stress)
+  stressMarkers.push(b(0.3, 0.3, HD*0.5, stressMat).tap(function(m){m.position.set(EX+0.3, SF, N-HD*0.25);}));
+  stressMarkers.push(b(0.3, 0.3, HD*0.4, stressMat).tap(function(m){m.position.set(EX+0.3, C2*0.7, N-HD*0.2);}));
+
+  // Diagonal shear crack pattern on rear wall (racking stress)
+  for (var sc = 0; sc < 5; sc++) {
+    var crack = b(0.2, 8, 0.2, stressGlow);
+    crack.position.set(WX + 5 + sc*5, FF + 6, N + 0.4);
+    crack.rotation.z = 0.5 + sc * 0.05; // diagonal shear pattern
+    stressMarkers.push(crack);
+  }
+
+  // Siding separation strips (horizontal gaps where boards pull apart)
+  // East wall near rear
+  [FF+4, FF+8, SF+3, SF+7].forEach(function(y) {
+    stressMarkers.push(b(0.3, 0.15, 12, stressMat).tap(function(m){m.position.set(EX+0.3, y, N-6);}));
+  });
+  // Rear wall
+  [FF+5, FF+9, SF+4, SF+8].forEach(function(y) {
+    stressMarkers.push(b(12, 0.15, 0.3, stressMat).tap(function(m){m.position.set(EX-6, y, N+0.3);}));
+  });
+
+  // Add all markers to the house group so they move with it
+  stressMarkers.forEach(function(sm) { houseGroup.add(sm); });
+
+  // ── WIND PRESSURE OVERLAYS ──
+  // East face - direct wind pressure (coral/red)
+  var pressEast = b(0.3, C2-0, HD, new THREE.MeshLambertMaterial({color:0xff6f61,transparent:true,opacity:0.35}));
+  pressEast.position.set(EX+0.5, C2/2, 0); wScene.add(pressEast);
+
+  // South face - moderate pressure (orange)
+  var pressSouth = b(HW, C2-0, 0.3, new THREE.MeshLambertMaterial({color:0xffaa33,transparent:true,opacity:0.25}));
+  pressSouth.position.set(0, C2/2, S-0.5); wScene.add(pressSouth);
+
+  // Stub east face - direct pressure
+  var pressStubE = b(0.3, C2, STUB_D, new THREE.MeshLambertMaterial({color:0xff6f61,transparent:true,opacity:0.4}));
+  pressStubE.position.set(EX+STUB_W+0.5, C2/2, N-STUB_D/2); wScene.add(pressStubE);
+
+  // CORNER PRESSURE ZONE - where wind gets trapped at stub junction
+  // Simple red glow at the inside corner (no overlapping box)
+  var cornerGlow = new THREE.Mesh(
+    new THREE.SphereGeometry(5, 16, 16),
+    new THREE.MeshLambertMaterial({color:0xff0000, transparent:true, opacity:0.2})
+  );
+  cornerGlow.position.set(EX+1, C2/2, N-STUB_D);
+  wScene.add(cornerGlow);
+
+  // Arrows converging into the corner (showing wind being trapped)
+  var trapDir1 = new THREE.Vector3(-1, 0, 0).normalize(); // wind hitting stub south wall
+  var trapDir2 = new THREE.Vector3(0, 0, 1).normalize();   // wind hitting main east wall
+  var trapArr1 = new THREE.ArrowHelper(trapDir1, new THREE.Vector3(EX+STUB_W+6, C2*0.4, N-STUB_D), 8, 0xff3333, 2, 1);
+  var trapArr2 = new THREE.ArrowHelper(trapDir2, new THREE.Vector3(EX+1, C2*0.4, N-STUB_D-8), 8, 0xff3333, 2, 1);
+  var trapArr3 = new THREE.ArrowHelper(trapDir1, new THREE.Vector3(EX+STUB_W+6, C2*0.6, N-STUB_D), 8, 0xff3333, 2, 1);
+  var trapArr4 = new THREE.ArrowHelper(trapDir2, new THREE.Vector3(EX+1, C2*0.6, N-STUB_D-8), 8, 0xff3333, 2, 1);
+  wScene.add(trapArr1); wScene.add(trapArr2); wScene.add(trapArr3); wScene.add(trapArr4);
+
+  // Pulsing ring kept simple and moved outside the walls
+  var vortexRing = new THREE.Mesh(
+    new THREE.RingGeometry(3, 4, 24),
+    new THREE.MeshLambertMaterial({color:0xff0000, transparent:true, opacity:0.5, side: THREE.DoubleSide})
+  );
+  vortexRing.position.set(EX+STUB_W+3, C2/2, N-STUB_D);
+  vortexRing.rotation.y = Math.PI/2;
+  wScene.add(vortexRing);
+
+  // West face - suction/leeward (blue)
+  var pressWest = b(0.3, C2, HD, new THREE.MeshLambertMaterial({color:0x4488ff,transparent:true,opacity:0.2}));
+  pressWest.position.set(WX-0.5, C2/2, 0); wScene.add(pressWest);
+
+  // Roof uplift (blue on top)
+  var roofUplift = b(HW, 0.3, HD, new THREE.MeshLambertMaterial({color:0x4488ff,transparent:true,opacity:0.2}));
+  roofUplift.position.set(0, C2+0.5, 0); wScene.add(roofUplift);
+
+  // ── ARROW HELPER (proper aligned shaft + head) ──
+  // Wind direction: from SE toward NW = direction vector (-1, 0, 1) normalized
+  var windDir = new THREE.Vector3(-0.6, 0, 0.8).normalize(); // S to NW
+
+  // ── RACKING FORCE ARROWS (red, at rear-right corner) ──
+  for (var ai = 0; ai < 5; ai++) {
+    var rackOrigin = new THREE.Vector3(EX + 2 + ai*1.5, FF + 3, N + 3);
+    var rackArrow = new THREE.ArrowHelper(
+      new THREE.Vector3(-0.7, 0, -0.7).normalize(), // pointing NW into corner
+      rackOrigin, 10, 0xff0000, 2.5, 1.2
+    );
+    wScene.add(rackArrow);
+  }
+
+  // ── WIND FLOW ARROWS (yellow, from SE toward NW) ──
+  // Far field arrows (tracked for animation)
+  windArrows = [];
+  for (var wy = 0; wy < 4; wy++) {
+    for (var wz = 0; wz < 3; wz++) {
+      var yPos = 8 + wy * 8;
+      var origin = new THREE.Vector3(50 + wz * 8, yPos, S - 20 - wz * 5);
+      var wa = new THREE.ArrowHelper(windDir, origin, 20, 0xffee00, 3, 1.2);
+      wa.line.material.transparent = true; wa.line.material.opacity = 0.7;
+      wa.cone.material.transparent = true; wa.cone.material.opacity = 0.7;
+      wa._origPos = origin.clone();
+      wScene.add(wa);
+      windArrows.push(wa);
+    }
+  }
+  // Close arrows near east wall
+  for (var la = 0; la < 6; la++) {
+    var yy = 5 + la * 5;
+    var origin2 = new THREE.Vector3(EX + 20, yy, -10 + la * 4);
+    var wa2 = new THREE.ArrowHelper(windDir, origin2, 15, 0xffee00, 2.5, 1);
+    wa2.line.material.transparent = true; wa2.line.material.opacity = 0.7;
+    wa2.cone.material.transparent = true; wa2.cone.material.opacity = 0.7;
+    wa2._origPos = origin2.clone();
+    wScene.add(wa2);
+    windArrows.push(wa2);
+  }
+
+  // ── SHEAR CRACK INDICATORS (rear wall) ──
+  var crackMat = new THREE.MeshLambertMaterial({color:0xff0000, transparent:true, opacity:0.8});
+  // Diagonal crack lines on rear wall
+  for (var ci = 0; ci < 4; ci++) {
+    var crack = b(0.15, 8, 0.15, crackMat);
+    crack.position.set(EX - 5 + ci * 4, FF + 4, N + 0.5);
+    crack.rotation.z = 0.6; // diagonal
+    wScene.add(crack);
+  }
+
+  // ── LABELS (3D text approximated with sprites) ──
+  function addLabel(text, x, y, z, color) {
+    var canvas = document.createElement('canvas');
+    canvas.width = 512; canvas.height = 64;
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = color || '#ff0000';
+    ctx.font = 'bold 32px Arial';
+    ctx.fillText(text, 10, 42);
+    var tex = new THREE.CanvasTexture(canvas);
+    var spriteMat = new THREE.SpriteMaterial({map: tex, transparent: true});
+    var sprite = new THREE.Sprite(spriteMat);
+    sprite.position.set(x, y, z);
+    sprite.scale.set(20, 2.5, 1);
+    wScene.add(sprite);
+  }
+
+  addLabel('WIND DIRECTION (S to NW)', 45, 38, -30, '#ffee00');
+  addLabel('100-110 MPH GUSTS', 45, 35, -30, '#ffee00');
+  addLabel('DIRECT PRESSURE 45 psf', EX+8, 25, 0, '#ff6f61');
+  addLabel('TRAPPED WIND 65+ psf', EX+STUB_W+8, 18, N-STUB_D, '#ff0000');
+  addLabel('RACKING FORCE', EX-5, FF+8, N+5, '#ff0000');
+  addLabel('SHEAR CRACKS', EX-3, FF+1, N+3, '#ff3333');
+  addLabel('SUCTION -20 psf', WX-12, 20, 0, '#4488ff');
+  addLabel('ROOF UPLIFT -55 psf', 0, RP+5, 0, '#4488ff');
+
+  // Compass rose
+  addLabel('N', 0, 1, N+15, '#333333');
+  addLabel('S', 0, 1, S-15, '#333333');
+
+  window.addEventListener('resize', function() {
+    if (!container.clientWidth) return;
+    wCamera.aspect = container.clientWidth / container.clientHeight;
+    wCamera.updateProjectionMatrix();
+    wRenderer.setSize(container.clientWidth, container.clientHeight);
+  });
+
+  // ── RAIN PARTICLE SYSTEM ──
+  var rainCount = 15000;
+  var rainGeo = new THREE.BufferGeometry();
+  var rainPositions = new Float32Array(rainCount * 3);
+  var rainVelocities = [];
+  for (var ri2 = 0; ri2 < rainCount; ri2++) {
+    rainPositions[ri2*3] = (Math.random() - 0.2) * 200 - 30;
+    rainPositions[ri2*3+1] = Math.random() * 90;
+    rainPositions[ri2*3+2] = (Math.random() - 0.5) * 200;
+    rainVelocities.push({
+      x: -0.6 - Math.random()*0.4,  // driving sideways NW
+      y: -0.5 - Math.random()*0.3,  // less vertical, more horizontal = driving rain
+      z: 0.3 + Math.random()*0.2    // strong northward push
+    });
+  }
+  rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPositions, 3));
+  var rainMaterial = new THREE.PointsMaterial({
+    color: 0x99bbdd, size: 0.2, transparent: true, opacity: 0
+  });
+  var rain = new THREE.Points(rainGeo, rainMaterial);
+  wScene.add(rain);
+
+  // ── WATER LEAK DRIPS (at seam locations) ──
+  // Seam/crack locations where water intrudes
+  var leakSources = [
+    {x: EX-2, y: C2-2, z: N},       // rear wall seam (top)
+    {x: EX+1, y: SF, z: N-STUB_D},  // stub junction seam
+    {x: EX-5, y: C2-5, z: N},       // rear wall mid
+    {x: 0, y: C2, z: N-5},          // chimney seam area
+    {x: EX, y: SF+5, z: N-3},       // east wall rear seam
+    {x: EX-8, y: C2-3, z: N},       // rear wall left
+  ];
+  var dripCount = 200;
+  var dripGeo = new THREE.BufferGeometry();
+  var dripPositions = new Float32Array(dripCount * 3);
+  var dripVelocities = [];
+  var dripSources = [];
+  for (var di = 0; di < dripCount; di++) {
+    var src = leakSources[di % leakSources.length];
+    dripPositions[di*3] = src.x + (Math.random()-0.5)*2;
+    dripPositions[di*3+1] = src.y - Math.random()*5;
+    dripPositions[di*3+2] = src.z + (Math.random()-0.5)*1;
+    dripVelocities.push({
+      x: (Math.random()-0.5)*0.02,
+      y: -0.1 - Math.random()*0.15,
+      z: (Math.random()-0.5)*0.02
+    });
+    dripSources.push(src);
+  }
+  dripGeo.setAttribute('position', new THREE.BufferAttribute(dripPositions, 3));
+  var dripMaterial = new THREE.PointsMaterial({
+    color: 0x3366aa, size: 0.3, transparent: true, opacity: 0
+  });
+  var drips = new THREE.Points(dripGeo, dripMaterial);
+  wScene.add(drips);
+
+  // Water stain streaks on walls (visible when animating)
+  var waterStains = [];
+  leakSources.forEach(function(src) {
+    var stain = b(0.5, 8, 0.5, new THREE.MeshLambertMaterial({color:0x224466, transparent:true, opacity:0}));
+    stain.position.set(src.x, src.y - 5, src.z + 0.3);
+    wScene.add(stain);
+    waterStains.push(stain);
+  });
+
+  // Button handlers
+  document.getElementById('btnWindAnimate').addEventListener('click', function() {
+    if (!windAnimating) {
+      windAnimating = true;
+      windAnimTime = 0;
+      this.textContent = 'Stop';
+      this.style.background = '#cc0000';
+    } else {
+      windAnimating = false;
+      this.textContent = 'Animate Storm';
+      this.style.background = '#ff6f61';
+    }
+  });
+
+  document.getElementById('btnWindReset').addEventListener('click', function() {
+    windAnimating = false;
+    windAnimTime = 0;
+    document.getElementById('btnWindAnimate').textContent = 'Animate Storm';
+    document.getElementById('btnWindAnimate').style.background = '#ff6f61';
+    // Reset house parts to original positions
+    windHouseParts.forEach(function(m, i) {
+      var o = windOrigPositions[i];
+      m.position.set(o.px, o.py, o.pz);
+      m.rotation.set(o.rx, o.ry, o.rz);
+    });
+    // Reset arrows
+    windArrows.forEach(function(a) {
+      if (a._origPos) a.position.copy(a._origPos);
+    });
+    // Reset rain/drips/sky/stress
+    rainMaterial.opacity = 0;
+    dripMaterial.opacity = 0;
+    waterStains.forEach(function(ws) { ws.material.opacity = 0; });
+    stressMarkers.forEach(function(sm) { sm.material.opacity = 0; });
+    wScene.background.setRGB(0.82, 0.86, 0.89);
+    wScene.fog.color.setRGB(0.82, 0.86, 0.89);
+  });
+
+  function animateWind() {
+    wAnimId = requestAnimationFrame(animateWind);
+    wControls.update();
+
+    var t = Date.now() * 0.002;
+    // Pulse vortex ring always
+    vortexRing.scale.set(1 + Math.sin(t)*0.15, 1 + Math.sin(t)*0.15, 1);
+    vortexRing.rotation.x = t * 0.5;
+
+    if (windAnimating) {
+      windAnimTime += 0.008;
+      var phase = Math.min(windAnimTime, 1); // 0 to 1 over ~2 seconds
+      // Darken sky as storm intensifies
+      var skyDark = 0.7 - phase * 0.4;
+      wScene.background.setRGB(skyDark * 0.82, skyDark * 0.86, skyDark * 0.9);
+      wScene.fog.color.setRGB(skyDark * 0.82, skyDark * 0.86, skyDark * 0.9);
+      var gusts = Math.sin(windAnimTime * 4) * 0.3; // oscillating gusts
+
+      // Move wind arrows toward the house (pulsing)
+      windArrows.forEach(function(a) {
+        if (!a._origPos) return;
+        var pulse = Math.sin(windAnimTime * 3 + a._origPos.y * 0.2) * 5;
+        a.position.set(
+          a._origPos.x + windDir.x * pulse * phase,
+          a._origPos.y,
+          a._origPos.z + windDir.z * pulse * phase
+        );
+      });
+
+      // Rack from rear-right corner pivot (where wind hits hardest)
+      // Pivot point = back-right corner (where wind hits, front sways most)
+      var pivotX = EX + STUB_W;
+      var pivotZ = N;
+      var rackAngle = phase * 0.035 * (1 + gusts); // stronger twist
+      var leanX = phase * 0.015 * (1 + gusts);     // lean forward
+      var leanZ = phase * 0.008 * (1 + gusts);     // lean sideways
+
+      windHouseParts.forEach(function(m, i) {
+        var o = windOrigPositions[i];
+        // Move pivot to rear-right corner, rotate, move back
+        // This makes the house twist AROUND the back-right corner
+        m.position.x = o.px - pivotX;
+        m.position.z = o.pz - pivotZ;
+        m.rotation.y = o.ry + rackAngle;
+        m.rotation.x = o.rx - leanX;    // lean north (away from south wind)
+        m.rotation.z = o.rz + leanZ;    // lean west (away from east wind)
+        // Translate back + add wind shift
+        var cosR = Math.cos(rackAngle), sinR = Math.sin(rackAngle);
+        var rx = m.position.x * cosR - m.position.z * sinR;
+        var rz = m.position.x * sinR + m.position.z * cosR;
+        m.position.x = rx + pivotX - phase * 0.5 * (1 + gusts);
+        m.position.z = rz + pivotZ + phase * 0.3 * (1 + gusts);
+        m.position.y = o.py - phase * 0.15;
+      });
+
+      // ── ANIMATE STRESS MARKERS (bright red separation lines) ──
+      var stressIntensity = Math.min(phase * 1.5, 1.0);
+      var pulse = 0.5 + Math.sin(windAnimTime * 6) * 0.3; // pulsing effect
+      stressMarkers.forEach(function(sm) {
+        if (sm.material === stressGlow) {
+          // High stress areas (corners near pivot) - glow brighter
+          sm.material.opacity = stressIntensity * 0.9 * pulse;
+        } else {
+          // Moderate stress areas
+          sm.material.opacity = stressIntensity * 0.6 * pulse;
+        }
+      });
+
+      // ── ANIMATE HURRICANE RAIN (driving, nearly horizontal) ──
+      rainMaterial.opacity = Math.min(phase * 1.2, 0.85);
+      rainMaterial.size = 0.2 + gusts * 0.1;
+      var rp = rainGeo.attributes.position.array;
+      var gustMult = 1.5 + gusts;  // gusts intensify the driving
+      for (var rr = 0; rr < rainCount; rr++) {
+        var rv = rainVelocities[rr];
+        rp[rr*3] += rv.x * gustMult * 2;    // driving sideways hard
+        rp[rr*3+1] += rv.y * gustMult;       // less fall, more horizontal
+        rp[rr*3+2] += rv.z * gustMult * 2;   // strong northward push
+        // Reset when hits ground or blown past house
+        if (rp[rr*3+1] < -1 || rp[rr*3] < -100 || rp[rr*3+2] > 100) {
+          rp[rr*3] = 60 + Math.random() * 80;   // respawn far east
+          rp[rr*3+1] = 5 + Math.random() * 70;
+          rp[rr*3+2] = -80 + Math.random() * 120; // spread along length
+        }
+      }
+      rainGeo.attributes.position.needsUpdate = true;
+
+      // ── ANIMATE WATER LEAKS (drips through seams) ──
+      dripMaterial.opacity = Math.min(phase * 1.2, 0.8);
+      var dp = dripGeo.attributes.position.array;
+      for (var dd = 0; dd < dripCount; dd++) {
+        var dv = dripVelocities[dd];
+        dp[dd*3] += dv.x;
+        dp[dd*3+1] += dv.y;
+        dp[dd*3+2] += dv.z;
+        // Reset drip when it hits the floor
+        if (dp[dd*3+1] < FF - 1) {
+          var src = dripSources[dd];
+          dp[dd*3] = src.x + (Math.random()-0.5)*2;
+          dp[dd*3+1] = src.y - Math.random()*2;
+          dp[dd*3+2] = src.z + (Math.random()-0.5)*1;
+        }
+      }
+      dripGeo.attributes.position.needsUpdate = true;
+
+      // Water stain streaks grow visible
+      waterStains.forEach(function(ws) {
+        ws.material.opacity = Math.min(phase * 0.6, 0.4);
+        ws.scale.y = 1 + phase * 0.5;
+      });
+    } else {
+      // When not animating, fade out rain/drips/stress
+      if (rainMaterial.opacity > 0) rainMaterial.opacity *= 0.95;
+      if (dripMaterial.opacity > 0) dripMaterial.opacity *= 0.95;
+      waterStains.forEach(function(ws) { if (ws.material.opacity > 0) ws.material.opacity *= 0.95; });
+      stressMarkers.forEach(function(sm) { if (sm.material.opacity > 0) sm.material.opacity *= 0.9; });
+    }
+
+    wRenderer.render(wScene, wCamera);
+  }
+  animateWind();
+}
+
+// Init when tab shown
+var windObserver = new MutationObserver(function() {
+  var tab = document.getElementById('tab-windforces');
+  if (tab && tab.classList.contains('active')) {
+    initWindForces();
+  }
+});
+windObserver.observe(document.getElementById('tab-windforces'), { attributes: true, attributeFilter: ['class'] });
+</script>
+</body>
+</html>
