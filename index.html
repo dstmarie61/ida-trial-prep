@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>1674 Jefferson Ave - Hurricane Ida LIGA Trial Prep Dashboard</title>
+<title>1674 Jefferson Ave - Hurricane Ida Claim Dashboard</title>
 <style>
 :root {
   --steel-teal: #3d5a6c;
@@ -367,74 +367,84 @@ tbody tr:hover { background: #fafcfd; }
   .floorplan-container { grid-template-columns: 1fr; }
 }
 
-/* ── Auth Gate ── */
-#auth-gate {
-  position: fixed; inset: 0; z-index: 10000;
-  display: flex; align-items: center; justify-content: center;
+/* Login overlay */
+.login-overlay {
+  position: fixed; inset: 0; z-index: 9999;
   background: linear-gradient(135deg, var(--deep-slate), var(--steel-teal));
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  display: flex; align-items: center; justify-content: center;
 }
-#auth-gate.hidden { display: none; }
-.auth-box {
-  background: white; border-radius: 14px; padding: 40px 36px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.25); text-align: center;
-  max-width: 400px; width: 90%;
+.login-box {
+  background: white; border-radius: 12px; padding: 40px; width: 380px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3); text-align: center;
 }
-.auth-box h2 { font-size: 1.3rem; color: var(--deep-slate); margin-bottom: 6px; }
-.auth-box .auth-subtitle { font-size: 0.82rem; color: var(--silver); margin-bottom: 24px; }
-.auth-box input[type="password"] {
-  width: 100%; padding: 12px 16px; border: 2px solid var(--cloud);
-  border-radius: 8px; font-size: 1rem; outline: none;
-  transition: border-color 0.2s;
+.login-box h2 { color: var(--steel-teal); margin-bottom: 6px; font-size: 1.3rem; }
+.login-box .login-subtitle { color: var(--silver); font-size: 0.8rem; margin-bottom: 24px; }
+.login-box input {
+  width: 100%; padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px;
+  font-size: 0.9rem; font-family: inherit; margin-bottom: 12px; box-sizing: border-box;
 }
-.auth-box input[type="password"]:focus { border-color: var(--steel-teal); }
-.auth-box input[type="password"].shake {
-  animation: shake 0.4s ease; border-color: var(--coral);
+.login-box input:focus { outline: none; border-color: var(--steel-teal); box-shadow: 0 0 0 2px rgba(61,90,108,0.15); }
+.login-box .login-btn {
+  width: 100%; padding: 12px; border: none; border-radius: 6px; font-size: 0.95rem;
+  font-weight: 600; cursor: pointer; background: var(--steel-teal); color: white;
+  font-family: inherit;
 }
-.auth-btn {
-  margin-top: 16px; width: 100%; padding: 12px;
-  background: var(--coral); color: white; border: none;
-  border-radius: 8px; font-size: 1rem; font-weight: 600;
-  cursor: pointer; transition: background 0.2s;
+.login-box .login-btn:hover { background: var(--deep-slate); }
+.login-box .login-error { color: var(--coral); font-size: 0.8rem; margin-top: 8px; min-height: 1.2em; }
+.login-box .role-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.7rem;
+  font-weight: 600; margin-top: 8px;
 }
-.auth-btn:hover { background: #e55a4f; }
-.auth-error { color: var(--coral); font-size: 0.82rem; margin-top: 10px; min-height: 1.2em; }
-.auth-lock-icon { font-size: 2.4rem; margin-bottom: 12px; }
-@keyframes shake {
-  0%,100% { transform: translateX(0); }
-  20%,60% { transform: translateX(-8px); }
-  40%,80% { transform: translateX(8px); }
+.role-badge.admin { background: #e8f5e9; color: #2e7d32; }
+.role-badge.viewer { background: var(--cloud); color: var(--steel-teal); }
+
+/* Viewer mode - disable editing */
+body.viewer-mode .split-slider { pointer-events: none !important; opacity: 0.5 !important; }
+body.viewer-mode .split-slider-row button { display: none !important; }
+body.viewer-mode textarea { pointer-events: none !important; opacity: 0.6 !important; }
+body.viewer-mode #exportUserName { pointer-events: none !important; opacity: 0.6 !important; }
+body.viewer-mode .tool-btn[data-tool="pin"] { display: none !important; }
+body.viewer-mode #savePinBtn { display: none !important; }
+body.viewer-mode #btnMeasure { display: none !important; }
+
+/* User bar */
+.user-bar {
+  display: flex; align-items: center; gap: 8px; padding: 4px 20px;
+  background: var(--cloud); font-size: 0.75rem; color: var(--steel-teal);
+  justify-content: flex-end;
 }
-#dashboard-content { display: none; }
-#dashboard-content.visible { display: block; }
+.user-bar .role-badge { margin-left: 4px; }
+.user-bar .logout-link { color: var(--coral); cursor: pointer; text-decoration: underline; margin-left: 8px; }
 </style>
 </head>
 <body>
 
-<!-- Auth Gate -->
-<div id="auth-gate">
-  <div class="auth-box">
-    <div class="auth-lock-icon">🔒</div>
-    <h2>Trial Prep Dashboard</h2>
-    <p class="auth-subtitle">1674 Jefferson Ave — Authorized Access Only</p>
-    <form id="auth-form" onsubmit="return false;">
-      <input type="password" id="auth-password" placeholder="Enter password" autocomplete="off" autofocus />
-      <button type="submit" class="auth-btn">Sign In</button>
-      <div class="auth-error" id="auth-error"></div>
-    </form>
+<!-- LOGIN OVERLAY -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <h2>1674 Jefferson Ave</h2>
+    <div class="login-subtitle">Hurricane Ida LIGA Trial Prep Dashboard</div>
+    <input type="email" id="loginEmail" placeholder="Email address" autocomplete="email" />
+    <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password" />
+    <button class="login-btn" id="loginBtn">Sign In</button>
+    <div class="login-error" id="loginError"></div>
   </div>
 </div>
 
-<div id="dashboard-content">
 <div class="header">
   <div>
-    <h1>1674 Jefferson Ave - Hurricane Ida LIGA Trial Prep Dashboard</h1>
+    <h1>1674 Jefferson Ave - Hurricane Ida Claim Dashboard</h1>
     <div class="subtitle">David St Marie &amp; Anna Sampere v. Louisiana Insurance Guaranty Association (LIGA)</div>
   </div>
   <div class="case-info">
     <div>Trainque Group Construction</div>
     <div>Project #808 | Contract: $664,174.90</div>
   </div>
+</div>
+
+<div class="user-bar" id="userBar" style="display:none">
+  <span id="userBarText"></span>
+  <span class="logout-link" id="logoutLink">Sign out</span>
 </div>
 
 <div class="nav-tabs">
@@ -449,6 +459,7 @@ tbody tr:hover { background: #fafcfd; }
 
 <!-- OVERVIEW TAB -->
 <div id="tab-overview" class="tab-content active">
+  <div class="export-bar" style="display:none"><button class="btn btn-primary" id="generateReportBtn" style="font-size:0.9rem;padding:10px 24px">Generate Report</button></div>
   <div class="summary-grid" id="overviewCards"></div>
   <div class="chart-row">
     <div class="chart-container">
@@ -473,8 +484,9 @@ tbody tr:hover { background: #fafcfd; }
 
 <!-- INVOICES TAB -->
 <div id="tab-invoices" class="tab-content">
-  <div class="export-bar">
+  <div class="export-bar" style="gap:12px;align-items:center">
     <button class="btn btn-outline" id="exportCSVBtn">Export CSV</button>
+    <span id="storageUsage" style="font-size:0.75rem;color:var(--silver)"></span>
   </div>
   <div class="summary-grid" id="invoiceSummaryCards"></div>
   <div class="data-table-wrap">
@@ -489,6 +501,11 @@ tbody tr:hover { background: #fafcfd; }
     Adjust the sliders to allocate each budget line item between Hurricane Ida and Renovation.
     The dashboard totals update in real-time.
   </p>
+  <div class="export-bar" style="align-items:center">
+    <label style="font-size:0.85rem;color:var(--steel-teal);font-weight:500;margin-right:6px">Prepared by:</label>
+    <input type="text" id="exportUserName" placeholder="Your name" style="padding:6px 10px;border:1px solid #ccc;border-radius:6px;font-size:0.85rem;width:200px;font-family:inherit" />
+    <button class="btn btn-primary" id="exportXlsxBtn" style="font-size:0.85rem;padding:8px 20px">Export to XLSX</button>
+  </div>
   <div class="summary-grid" id="breakdownSummary"></div>
   <div class="data-table-wrap">
     <h3>Budget Line Item Allocation</h3>
@@ -740,9 +757,117 @@ tbody tr:hover { background: #fafcfd; }
   </div>
 </div>
 
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script>
 (function() {
 "use strict";
+
+// ==================== AUTH ====================
+var ADMIN_EMAIL = 'dstmarie@smgeng.com';
+// SHA-256 hash of the viewer password - change by updating this hash
+// Default password: "IdaLIGA2024"
+var PASSWORD_HASH = '41b9429a0ef16800834edb72660feb2eb3b65efc3de3900a63e249800879ebb6';
+
+// Pure JS SHA-256 (works on file:// and https://)
+function sha256(str) {
+  function rr(n,x){return(x>>>n)|(x<<(32-n));}
+  var K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  var H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  var bytes=[];
+  for(var i=0;i<str.length;i++){var c=str.charCodeAt(i);if(c<128)bytes.push(c);else if(c<2048){bytes.push(192|(c>>6));bytes.push(128|(c&63));}else{bytes.push(224|(c>>12));bytes.push(128|((c>>6)&63));bytes.push(128|(c&63));}}
+  var l=bytes.length*8;bytes.push(0x80);while(bytes.length%64!==56)bytes.push(0);
+  bytes.push(0,0,0,0);bytes.push((l>>>24)&0xff,(l>>>16)&0xff,(l>>>8)&0xff,l&0xff);
+  for(var o=0;o<bytes.length;o+=64){
+    var w=[];for(var t=0;t<16;t++)w[t]=(bytes[o+t*4]<<24)|(bytes[o+t*4+1]<<16)|(bytes[o+t*4+2]<<8)|bytes[o+t*4+3];
+    for(t=16;t<64;t++){var s0=rr(7,w[t-15])^rr(18,w[t-15])^(w[t-15]>>>3);var s1=rr(17,w[t-2])^rr(19,w[t-2])^(w[t-2]>>>10);w[t]=(w[t-16]+s0+w[t-7]+s1)|0;}
+    var a=H[0],b=H[1],c2=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
+    for(t=0;t<64;t++){var S1=rr(6,e)^rr(11,e)^rr(25,e);var ch=(e&f)^((~e)&g);var tmp=(h+S1+ch+K[t]+w[t])|0;var S0=rr(2,a)^rr(13,a)^rr(22,a);var maj=(a&b)^(a&c2)^(b&c2);h=g;g=f;f=e;e=(d+tmp)|0;d=c2;c2=b;b=a;a=(tmp+S0+maj)|0;}
+    H[0]=(H[0]+a)|0;H[1]=(H[1]+b)|0;H[2]=(H[2]+c2)|0;H[3]=(H[3]+d)|0;H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0;
+  }
+  var hex='';for(i=0;i<8;i++)for(var j=28;j>=0;j-=4)hex+='0123456789abcdef'.charAt((H[i]>>>j)&0xf);
+  return hex;
+}
+
+function getSession() {
+  try { return JSON.parse(sessionStorage.getItem('ida_session') || 'null'); } catch(e) { return null; }
+}
+
+function setSession(email, role) {
+  sessionStorage.setItem('ida_session', JSON.stringify({ email: email, role: role }));
+}
+
+function clearSession() {
+  sessionStorage.removeItem('ida_session');
+}
+
+function applyRole(role, email) {
+  document.getElementById('loginOverlay').style.display = 'none';
+  var userBar = document.getElementById('userBar');
+  userBar.style.display = 'flex';
+  var textEl = document.getElementById('userBarText');
+  textEl.textContent = '';
+  var emailSpan = document.createElement('span');
+  emailSpan.textContent = email + ' ';
+  textEl.appendChild(emailSpan);
+  var badge = document.createElement('span');
+  badge.className = 'role-badge ' + role;
+  badge.textContent = role === 'admin' ? 'Admin' : 'View Only';
+  textEl.appendChild(badge);
+  if (role === 'viewer') {
+    document.body.classList.add('viewer-mode');
+  } else {
+    document.body.classList.remove('viewer-mode');
+  }
+}
+
+// Check existing session
+var existingSession = getSession();
+if (existingSession) {
+  applyRole(existingSession.role, existingSession.email);
+} else {
+  document.getElementById('loginOverlay').style.display = 'flex';
+}
+
+// Login handler
+document.getElementById('loginBtn').addEventListener('click', function() { doLogin(); });
+document.getElementById('loginPassword').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+document.getElementById('loginEmail').addEventListener('keydown', function(e) { if (e.key === 'Enter') document.getElementById('loginPassword').focus(); });
+
+function doLogin() {
+  var email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  var pw = document.getElementById('loginPassword').value;
+  var errEl = document.getElementById('loginError');
+  errEl.textContent = '';
+
+  if (!email || !pw) { errEl.textContent = 'Please enter email and password.'; return; }
+
+  var hash = sha256(pw);
+  if (hash !== PASSWORD_HASH) {
+    errEl.textContent = 'Invalid password.';
+    return;
+  }
+  var role = (email === ADMIN_EMAIL) ? 'admin' : 'viewer';
+  setSession(email, role);
+  applyRole(role, email);
+}
+
+// Logout
+document.getElementById('logoutLink').addEventListener('click', function() {
+  clearSession();
+  document.body.classList.remove('viewer-mode');
+  document.getElementById('userBar').style.display = 'none';
+  document.getElementById('loginOverlay').style.display = 'flex';
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPassword').value = '';
+  document.getElementById('loginError').textContent = '';
+});
 
 // ==================== DATA ====================
 var invoices = [
@@ -1142,13 +1267,9 @@ var budgetItems = [
   { name: 'Mgmt Fee, Profit & Overhead (20%)', budget: 96118.28, cat: 'shared', idaPct: 0, detail: 'Flat 20% fee on total contract value for project management, profit, insurance and overhead. Billed proportionally across all invoices' }
 ];
 
-// Set defaults based on category, then load user-saved overrides
+// Set all default idaPct to 0 (no presets), then load user-saved values
 (function() {
-  budgetItems.forEach(function(item) {
-    if (item.cat === 'ida') item.idaPct = 100;
-    else if (item.cat === 'reno') item.idaPct = 0;
-    else item.idaPct = 50; // shared items default to 50/50
-  });
+  budgetItems.forEach(function(item) { item.idaPct = 0; });
   var saved = JSON.parse(localStorage.getItem('ida_budget_pcts') || '{}');
   var locks = JSON.parse(localStorage.getItem('ida_budget_locks') || '{}');
   budgetItems.forEach(function(item) {
@@ -1875,6 +1996,153 @@ function updateBreakdownSummary(total, ida, reno) {
   });
 }
 
+// ==================== EXPORT XLSX ====================
+document.getElementById('exportXlsxBtn').addEventListener('click', function() {
+  var userName = document.getElementById('exportUserName').value.trim() || 'Not specified';
+  var now = new Date();
+  var dateStr = (now.getMonth()+1) + '/' + now.getDate() + '/' + now.getFullYear() + ' ' +
+    now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  var savedNotes = JSON.parse(localStorage.getItem('ida_budget_notes') || '{}');
+  var filtered = budgetItems.filter(function(b) { return b.budget > 0; });
+
+  // Build rows for each sheet
+  var idaRows = [], renoRows = [], sharedRows = [];
+  var idaTotal = 0, renoTotal = 0, sharedTotal = 0, sharedIdaTotal = 0, sharedRenoTotal = 0;
+
+  filtered.forEach(function(item) {
+    var idaAmt = Math.round(item.budget * item.idaPct / 100 * 100) / 100;
+    var renoAmt = Math.round((item.budget - idaAmt) * 100) / 100;
+    var note = savedNotes[item.name] || '';
+
+    if (item.idaPct === 100) {
+      idaRows.push([item.name, item.detail || '', item.budget, item.idaPct + '%', idaAmt, note]);
+      idaTotal += idaAmt;
+    } else if (item.idaPct === 0) {
+      renoRows.push([item.name, item.detail || '', item.budget, item.idaPct + '%', renoAmt, note]);
+      renoTotal += renoAmt;
+    } else {
+      sharedRows.push([item.name, item.detail || '', item.budget, item.idaPct + '%', idaAmt, renoAmt, note]);
+      sharedTotal += item.budget;
+      sharedIdaTotal += idaAmt;
+      sharedRenoTotal += renoAmt;
+    }
+  });
+
+  var wb = XLSX.utils.book_new();
+
+  // --- Sheet 1: Ida-Related Damages ---
+  var idaData = [
+    ['Hurricane Ida - Related Damages'],
+    ['1674 Jefferson Ave | St Marie & Sampere v. LIGA'],
+    ['Prepared by: ' + userName, '', '', 'Date: ' + dateStr],
+    [],
+    ['Budget Item', 'Details', 'Contract Amount', 'Ida %', 'Ida Amount', 'Notes']
+  ];
+  idaRows.forEach(function(r) { idaData.push(r); });
+  idaData.push([]);
+  idaData.push(['TOTAL', '', '', '', idaTotal, '']);
+
+  var ws1 = XLSX.utils.aoa_to_sheet(idaData);
+  ws1['!cols'] = [{ wch: 38 }, { wch: 42 }, { wch: 16 }, { wch: 8 }, { wch: 16 }, { wch: 40 }];
+  // Merge title rows
+  ws1['!merges'] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 5 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 5 } }
+  ];
+  // Format currency columns
+  formatCurrencyCol(ws1, idaData, 2);
+  formatCurrencyCol(ws1, idaData, 4);
+  XLSX.utils.book_append_sheet(wb, ws1, 'Ida-Related Damages');
+
+  // --- Sheet 2: Renovations ---
+  var renoData = [
+    ['Renovation Items (0% Ida Attribution)'],
+    ['1674 Jefferson Ave | St Marie & Sampere v. LIGA'],
+    ['Prepared by: ' + userName, '', '', 'Date: ' + dateStr],
+    [],
+    ['Budget Item', 'Details', 'Contract Amount', 'Ida %', 'Reno Amount', 'Notes']
+  ];
+  renoRows.forEach(function(r) { renoData.push(r); });
+  renoData.push([]);
+  renoData.push(['TOTAL', '', '', '', renoTotal, '']);
+
+  var ws2 = XLSX.utils.aoa_to_sheet(renoData);
+  ws2['!cols'] = [{ wch: 38 }, { wch: 42 }, { wch: 16 }, { wch: 8 }, { wch: 16 }, { wch: 40 }];
+  ws2['!merges'] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 5 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 5 } }
+  ];
+  formatCurrencyCol(ws2, renoData, 2);
+  formatCurrencyCol(ws2, renoData, 4);
+  XLSX.utils.book_append_sheet(wb, ws2, 'Renovations');
+
+  // --- Sheet 3: Shared Ida/Renovation ---
+  var sharedData = [
+    ['Shared Items - Ida & Renovation Split'],
+    ['1674 Jefferson Ave | St Marie & Sampere v. LIGA'],
+    ['Prepared by: ' + userName, '', '', '', 'Date: ' + dateStr],
+    [],
+    ['Budget Item', 'Details', 'Contract Amount', 'Ida %', 'Ida Portion', 'Reno Portion', 'Notes']
+  ];
+  sharedRows.forEach(function(r) { sharedData.push(r); });
+  sharedData.push([]);
+  sharedData.push(['TOTAL', '', sharedTotal, '', sharedIdaTotal, sharedRenoTotal, '']);
+
+  var ws3 = XLSX.utils.aoa_to_sheet(sharedData);
+  ws3['!cols'] = [{ wch: 38 }, { wch: 42 }, { wch: 16 }, { wch: 8 }, { wch: 16 }, { wch: 16 }, { wch: 40 }];
+  ws3['!merges'] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 6 } }
+  ];
+  formatCurrencyCol(ws3, sharedData, 2);
+  formatCurrencyCol(ws3, sharedData, 4);
+  formatCurrencyCol(ws3, sharedData, 5);
+  XLSX.utils.book_append_sheet(wb, ws3, 'Shared Ida-Renovation');
+
+  // --- Sheet 4: Summary ---
+  var grandIda = idaTotal + sharedIdaTotal;
+  var grandReno = renoTotal + sharedRenoTotal;
+  var grandTotal = grandIda + grandReno;
+  var summaryData = [
+    ['Ida vs Renovation - Allocation Summary'],
+    ['1674 Jefferson Ave | David St Marie & Anna Sampere v. LIGA'],
+    ['Prepared by: ' + userName, '', 'Date: ' + dateStr],
+    ['Trainque Group Construction | Project #808'],
+    [],
+    ['Category', 'Amount', 'Notes'],
+    ['Ida-Only Items (100%)', idaTotal, idaRows.length + ' line items'],
+    ['Renovation-Only Items (0%)', renoTotal, renoRows.length + ' line items'],
+    ['Shared Items - Ida Portion', sharedIdaTotal, sharedRows.length + ' line items at user-set %'],
+    ['Shared Items - Reno Portion', sharedRenoTotal, ''],
+    [],
+    ['Total Ida Claim', grandIda, (grandIda / grandTotal * 100).toFixed(1) + '% of contract'],
+    ['Total Renovation', grandReno, (grandReno / grandTotal * 100).toFixed(1) + '% of contract'],
+    ['Grand Total', grandTotal, '']
+  ];
+
+  var ws4 = XLSX.utils.aoa_to_sheet(summaryData);
+  ws4['!cols'] = [{ wch: 34 }, { wch: 18 }, { wch: 40 }];
+  ws4['!merges'] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 2 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 2 } },
+    { s: { r: 3, c: 0 }, e: { r: 3, c: 2 } }
+  ];
+  formatCurrencyCol(ws4, summaryData, 1);
+  XLSX.utils.book_append_sheet(wb, ws4, 'Summary');
+
+  XLSX.writeFile(wb, 'Ida_vs_Renovation_Breakdown_' + now.getFullYear() + '-' +
+    String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + '.xlsx');
+});
+
+function formatCurrencyCol(ws, data, colIdx) {
+  for (var r = 0; r < data.length; r++) {
+    var cell = XLSX.utils.encode_cell({ r: r, c: colIdx });
+    if (ws[cell] && typeof ws[cell].v === 'number') {
+      ws[cell].z = '$#,##0.00';
+    }
+  }
+}
+
 // ==================== FLOOR PLAN ====================
 // Floor plan image paths (cropped PNGs from architect PDFs)
 var floorplanImages = {
@@ -2578,6 +2846,222 @@ document.getElementById('btnLockPins').addEventListener('click', function() {
   updateLockButton();
   renderFloorPlan();
 });
+
+// ==================== REPORT GENERATOR ====================
+document.getElementById('generateReportBtn').addEventListener('click', function() {
+  var t = getIdaRenoTotals();
+
+  var w = window.open('', '_blank');
+  var doc = w.document;
+  doc.open();
+  doc.title = '1674 Jefferson Ave - Ida Claim Report';
+
+  var style = doc.createElement('style');
+  style.textContent = 'body{font-family:Segoe UI,system-ui,sans-serif;margin:40px;color:#1a2930;font-size:12px;}'
+    + 'h1{color:#3d5a6c;font-size:20px;border-bottom:3px solid #3d5a6c;padding-bottom:8px;}'
+    + 'h2{color:#2d4450;font-size:16px;margin-top:30px;border-bottom:1px solid #ccc;padding-bottom:4px;}'
+    + 'h3{color:#3d5a6c;font-size:13px;margin-top:20px;}'
+    + 'table{width:100%;border-collapse:collapse;margin:10px 0 20px;font-size:11px;}'
+    + 'th{background:#e8f0f5;padding:6px 10px;text-align:left;font-weight:600;border:1px solid #ddd;}'
+    + 'td{padding:5px 10px;border:1px solid #eee;}'
+    + 'tr:nth-child(even){background:#fafcfd;}'
+    + '.total-row{font-weight:700;background:#e8f0f5 !important;border-top:2px solid #3d5a6c;}'
+    + '.amt{text-align:right;font-family:Consolas,monospace;}'
+    + '.ida{color:#ff6f61;font-weight:600;}'
+    + '.reno{color:#4a7a94;}'
+    + '.check-link{color:#3d5a6c;font-size:10px;}'
+    + '.badge{display:inline-block;padding:1px 8px;border-radius:10px;font-size:10px;font-weight:600;}'
+    + '.badge-ida{background:rgba(255,111,97,0.12);color:#ff6f61;}'
+    + '.badge-reno{background:rgba(123,165,189,0.15);color:#4a7a94;}'
+    + '.header-info{display:flex;justify-content:space-between;margin-bottom:20px;}'
+    + '.summary-box{border:1px solid #ddd;padding:12px;border-radius:6px;text-align:center;min-width:140px;}'
+    + '.summary-box .label{font-size:10px;color:#999;text-transform:uppercase;}'
+    + '.summary-box .value{font-size:18px;font-weight:700;margin-top:4px;}'
+    + '.section{page-break-inside:avoid;}'
+    + '@media print{body{margin:20px;} .no-print{display:none;}}';
+  doc.head.appendChild(style);
+
+  var body = doc.body;
+
+  // Header
+  var header = doc.createElement('div');
+  var h1 = doc.createElement('h1');
+  h1.textContent = '1674 Jefferson Ave - Hurricane Ida Claim Report';
+  header.appendChild(h1);
+
+  var info = doc.createElement('div');
+  info.className = 'header-info';
+  var infoHTML = '';
+  infoHTML += '<div><strong>Claimant:</strong> David St Marie & Anna Sampere</div>';
+  infoHTML += '<div><strong>Defendant:</strong> Louisiana Insurance Guaranty Association (LIGA)</div>';
+  infoHTML += '<div><strong>Generated:</strong> ' + new Date().toLocaleDateString() + '</div>';
+  var infoDiv = doc.createElement('div');
+  infoDiv.style.cssText = 'display:flex;justify-content:space-between;margin-bottom:20px;font-size:11px;';
+  var d1 = doc.createElement('div'); d1.textContent = 'Claimant: David St Marie & Anna Sampere';
+  var d2 = doc.createElement('div'); d2.textContent = 'Defendant: LIGA';
+  var d3 = doc.createElement('div'); d3.textContent = 'Generated: ' + new Date().toLocaleDateString();
+  infoDiv.appendChild(d1); infoDiv.appendChild(d2); infoDiv.appendChild(d3);
+  header.appendChild(infoDiv);
+
+  // Summary boxes
+  var sumRow = doc.createElement('div');
+  sumRow.style.cssText = 'display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap;';
+  [{l:'Total Claimed (Ida)',v:fmtK(getIdaGrandTotal())},
+   {l:'Ida Repairs',v:fmtK(t.ida)},
+   {l:'Renovation',v:fmtK(t.reno)},
+   {l:'Full Contract',v:fmtK(t.budget)},
+   {l:'Invoices',v:String(invoices.length)}
+  ].forEach(function(s){
+    var bx = doc.createElement('div'); bx.className = 'summary-box';
+    var lb = doc.createElement('div'); lb.className = 'label'; lb.textContent = s.l;
+    var vl = doc.createElement('div'); vl.className = 'value'; vl.textContent = s.v;
+    bx.appendChild(lb); bx.appendChild(vl); sumRow.appendChild(bx);
+  });
+  header.appendChild(sumRow);
+  body.appendChild(header);
+
+  // ── INVOICE SUMMARY ──
+  var sec1 = doc.createElement('div'); sec1.className = 'section';
+  var h2a = doc.createElement('h2'); h2a.textContent = 'Invoice Summary';
+  sec1.appendChild(h2a);
+
+  var tbl1 = doc.createElement('table');
+  var thead1 = doc.createElement('thead');
+  var thr1 = doc.createElement('tr');
+  ['Inv #','Date','Line Items','Invoice Total'].forEach(function(h,i){
+    var th = doc.createElement('th'); th.textContent = h;
+    if(i===3) th.style.textAlign = 'right';
+    thr1.appendChild(th);
+  });
+  thead1.appendChild(thr1); tbl1.appendChild(thead1);
+
+  var tbody1 = doc.createElement('tbody');
+  var grandTotal = 0;
+  invoices.forEach(function(inv){
+    var tr = doc.createElement('tr');
+    var td1 = doc.createElement('td'); td1.textContent = inv.num; td1.style.fontWeight = '600';
+    var td2 = doc.createElement('td'); td2.textContent = inv.date;
+    var td3 = doc.createElement('td');
+    inv.items.forEach(function(item,i){
+      if(i > 0) td3.appendChild(doc.createElement('br'));
+      td3.appendChild(doc.createTextNode(item.desc + ' - ' + fmt(item.amount)));
+    });
+    td3.style.fontSize = '10px';
+    var td4 = doc.createElement('td'); td4.className = 'amt'; td4.style.fontWeight = '700'; td4.textContent = fmt(inv.total);
+    grandTotal += inv.total;
+
+    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3); tr.appendChild(td4);
+    tbody1.appendChild(tr);
+  });
+
+  // Total row
+  var totR = doc.createElement('tr'); totR.className = 'total-row';
+  var tt1 = doc.createElement('td'); tt1.setAttribute('colspan','3'); tt1.textContent = 'TOTAL (' + invoices.length + ' invoices)';
+  var tt2 = doc.createElement('td'); tt2.className = 'amt'; tt2.textContent = fmt(grandTotal);
+  totR.appendChild(tt1); totR.appendChild(tt2);
+  tbody1.appendChild(totR);
+  tbl1.appendChild(tbody1);
+  sec1.appendChild(tbl1);
+  body.appendChild(sec1);
+
+  // ── IDA VS RENOVATION BREAKDOWN ──
+  var sec2 = doc.createElement('div'); sec2.className = 'section';
+  var h2c = doc.createElement('h2'); h2c.textContent = 'Ida vs Renovation Budget Allocation';
+  sec2.appendChild(h2c);
+
+  var sumText = doc.createElement('div');
+  sumText.style.cssText = 'display:flex;gap:20px;margin-bottom:12px;';
+  var s1 = doc.createElement('div'); s1.className = 'summary-box';
+  s1.style.borderLeft = '4px solid #ff6f61';
+  var s1l = doc.createElement('div'); s1l.className = 'label'; s1l.textContent = 'Hurricane Ida';
+  var s1v = doc.createElement('div'); s1v.className = 'value ida'; s1v.textContent = fmtK(t.ida) + ' (' + (t.ida/t.budget*100).toFixed(1) + '%)';
+  s1.appendChild(s1l); s1.appendChild(s1v); sumText.appendChild(s1);
+  var s2 = doc.createElement('div'); s2.className = 'summary-box';
+  s2.style.borderLeft = '4px solid #7ba5bd';
+  var s2l = doc.createElement('div'); s2l.className = 'label'; s2l.textContent = 'Renovation';
+  var s2v = doc.createElement('div'); s2v.className = 'value reno'; s2v.textContent = fmtK(t.reno) + ' (' + (t.reno/t.budget*100).toFixed(1) + '%)';
+  s2.appendChild(s2l); s2.appendChild(s2v); sumText.appendChild(s2);
+  sec2.appendChild(sumText);
+
+  var tbl2 = doc.createElement('table');
+  var thead2 = doc.createElement('thead');
+  var thr2 = doc.createElement('tr');
+  var reportNotes = JSON.parse(localStorage.getItem('ida_budget_notes') || '{}');
+  ['Budget Item','Details','Amount','Ida %','Ida Amount','Reno Amount','Notes'].forEach(function(h,i){
+    var th = doc.createElement('th'); th.textContent = h;
+    if(i>=2 && i<=5) th.style.textAlign = 'right';
+    thr2.appendChild(th);
+  });
+  thead2.appendChild(thr2); tbl2.appendChild(thead2);
+
+  var tbody2 = doc.createElement('tbody');
+  var bTot = 0, bIda = 0, bReno = 0;
+  budgetItems.filter(function(bi){return bi.budget > 0;}).forEach(function(item){
+    var idaAmt = item.budget * item.idaPct / 100;
+    var renoAmt = item.budget - idaAmt;
+    bTot += item.budget; bIda += idaAmt; bReno += renoAmt;
+
+    var tr = doc.createElement('tr');
+    var td1 = doc.createElement('td'); td1.textContent = item.name; td1.style.fontWeight = '600'; td1.style.fontSize = '11px';
+    var td1b = doc.createElement('td'); td1b.textContent = item.detail || ''; td1b.style.cssText = 'font-size:9px;color:#888;max-width:180px;';
+    var td2 = doc.createElement('td'); td2.className = 'amt'; td2.textContent = fmt(item.budget);
+    var td3 = doc.createElement('td'); td3.className = 'amt'; td3.textContent = item.idaPct + '%';
+    var td4 = doc.createElement('td'); td4.className = 'amt';
+    td4.textContent = idaAmt > 0 ? fmt(idaAmt) : '-';
+    if(idaAmt > 0) td4.style.color = '#ff6f61';
+    var td5 = doc.createElement('td'); td5.className = 'amt';
+    td5.textContent = renoAmt > 0 ? fmt(renoAmt) : '-';
+    if(renoAmt > 0) td5.style.color = '#4a7a94';
+    var td6 = doc.createElement('td');
+    td6.style.cssText = 'font-size:9px;color:#555;max-width:160px;';
+    td6.textContent = reportNotes[item.name] || '';
+
+    tr.appendChild(td1); tr.appendChild(td1b); tr.appendChild(td2); tr.appendChild(td3); tr.appendChild(td4); tr.appendChild(td5); tr.appendChild(td6);
+    tbody2.appendChild(tr);
+  });
+
+  var totR2 = doc.createElement('tr'); totR2.className = 'total-row';
+  var t2a = doc.createElement('td'); t2a.setAttribute('colspan','2'); t2a.textContent = 'TOTALS';
+  var t2b = doc.createElement('td'); t2b.className = 'amt'; t2b.textContent = fmt(bTot);
+  var t2c = doc.createElement('td');
+  var t2d = doc.createElement('td'); t2d.className = 'amt'; t2d.style.color = '#ff6f61'; t2d.textContent = fmt(bIda);
+  var t2e = doc.createElement('td'); t2e.className = 'amt'; t2e.style.color = '#4a7a94'; t2e.textContent = fmt(bReno);
+  var t2f = doc.createElement('td');
+  totR2.appendChild(t2a); totR2.appendChild(t2b); totR2.appendChild(t2c); totR2.appendChild(t2d); totR2.appendChild(t2e); totR2.appendChild(t2f);
+  tbody2.appendChild(totR2);
+  tbl2.appendChild(tbody2);
+  sec2.appendChild(tbl2);
+  body.appendChild(sec2);
+
+  // Print button
+  var printBtn = doc.createElement('button');
+  printBtn.textContent = 'Print Report';
+  printBtn.className = 'no-print';
+  printBtn.style.cssText = 'padding:10px 24px;background:#3d5a6c;color:white;border:none;border-radius:6px;font-size:14px;cursor:pointer;margin-top:20px;';
+  printBtn.addEventListener('click', function(){ w.print(); });
+  body.appendChild(printBtn);
+
+  doc.close();
+});
+
+// ==================== STORAGE MANAGEMENT ====================
+function updateStorageUsage() {
+  var total = 0;
+  for (var key in localStorage) {
+    if (localStorage.hasOwnProperty(key)) {
+      total += localStorage[key].length * 2; // UTF-16 = 2 bytes per char
+    }
+  }
+  var mb = (total / 1024 / 1024).toFixed(1);
+  var maxMB = 5; // typical localStorage limit
+  var el = document.getElementById('storageUsage');
+  if (el) {
+    el.textContent = 'Storage: ' + mb + ' / ' + maxMB + ' MB';
+    el.style.color = parseFloat(mb) > 4 ? '#ff6f61' : 'var(--silver)';
+  }
+}
+
+updateStorageUsage();
 
 // ==================== INIT ====================
 renderOverview();
@@ -3911,53 +4395,6 @@ var windObserver = new MutationObserver(function() {
   }
 });
 windObserver.observe(document.getElementById('tab-windforces'), { attributes: true, attributeFilter: ['class'] });
-</script>
-</div><!-- /dashboard-content -->
-
-<script>
-// ── Auth Gate ──
-(function() {
-  var HASH = '6cf5fdc31b8b9dd23d3f2dbcf05f9d5152c0f12436efdafa6247c6d11f50e572';
-  var SESSION_KEY = 'ida_dash_auth';
-  var gate = document.getElementById('auth-gate');
-  var dashboard = document.getElementById('dashboard-content');
-  var form = document.getElementById('auth-form');
-  var input = document.getElementById('auth-password');
-  var errorEl = document.getElementById('auth-error');
-
-  function unlock() {
-    gate.classList.add('hidden');
-    dashboard.classList.add('visible');
-    sessionStorage.setItem(SESSION_KEY, 'true');
-  }
-
-  // Check session
-  if (sessionStorage.getItem(SESSION_KEY) === 'true') {
-    unlock();
-  }
-
-  async function sha256(message) {
-    var msgBuffer = new TextEncoder().encode(message);
-    var hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-    var hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
-  }
-
-  form.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    var pw = input.value;
-    if (!pw) return;
-    var hash = await sha256(pw);
-    if (hash === HASH) {
-      unlock();
-    } else {
-      errorEl.textContent = 'Incorrect password. Please try again.';
-      input.classList.add('shake');
-      input.value = '';
-      setTimeout(function() { input.classList.remove('shake'); }, 500);
-    }
-  });
-})();
 </script>
 </body>
 </html>
